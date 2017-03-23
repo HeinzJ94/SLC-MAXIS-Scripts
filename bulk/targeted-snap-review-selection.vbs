@@ -38,18 +38,6 @@ IF IsEmpty(FuncLib_URL) = TRUE THEN	'Shouldn't load FuncLib if it already loaded
 END IF
 'END FUNCTIONS LIBRARY BLOCK================================================================================================
 
-'CHANGELOG BLOCK ===========================================================================================================
-'Starts by defining a changelog array
-changelog = array()
-
-'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
-'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
-call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
-
-'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
-changelog_display
-'END CHANGELOG BLOCK =======================================================================================================
-
 'Defining classes-----------------------------
 Class case_attributes 'This class holds case-specific data
 	public MAXIS_case_number
@@ -104,7 +92,7 @@ EndDialog
 
 'Determining specific county for multicounty agencies...
 get_county_code
-
+'two_digit_county_code = "36"
 'Connects to BlueZone
 EMConnect ""
 
@@ -306,6 +294,11 @@ For c = 0 to ubound(caper_array)
 	IF len(MAXIS_footer_month) = 1 then MAXIS_footer_month = "0" & MAXIS_footer_month
 	MAXIS_footer_year = right(datepart("YYYY", date), 2)
 	call navigate_to_MAXIS_screen("CASE", "CURR") 'Case/curr first, to find inactive date and reason
+	EMReadScreen priv_check, 10, 24, 14
+	IF priv_check = "PRIVILEGED" THEN 'Check for privileged cases that cannot be accessed'
+	EMWriteScreen "____", 21, 70 'We need to blank out the command line to prevent an error on the next case'
+	ELSE 'not privileged, go ahead and enter the case'
+
 	EMWriteScreen "x", 4, 9
 
 	Transmit
@@ -364,6 +357,7 @@ For c = 0 to ubound(caper_array)
 			END IF
 		END IF
 	END IF
+	END IF
 Next
 END IF
 sa_count = 0
@@ -387,6 +381,11 @@ excel_row = 2
 		MAXIS_footer_year = right(datepart("YYYY", date), 2)
 		MAXIS_case_number = SNAP_active_array(n).MAXIS_case_number
 		call navigate_to_MAXIS_screen ("ELIG", "FS")
+		EMReadScreen priv_check, 10, 24, 14
+		IF priv_check = "PRIVILEGED" THEN 'Check for privileged cases that cannot be accessed'
+		EMWriteScreen "____", 21, 70 'We need to blank out the command line to prevent an error on the next case'
+		ELSE 'not privileged, go ahead and enter the case'
+
 		EMReadScreen version, 2, 2, 18 'Finding most recent approved version
 		For approved = version to 0 Step -1
 			EMReadScreen approved_check, 8, 3, 3
@@ -433,6 +432,7 @@ excel_row = 2
 				objExcel.cells(excel_row, 4).value = snap_active_array(n).snap_grant
 				active_criteria_total = active_criteria_total + 1
 				excel_row = excel_row + 1
+			END IF
 			END IF
 			sa_count = sa_count + 1
 		END IF
@@ -604,7 +604,7 @@ IF active_check = checked THEN
 	ObjExcel.Cells(3, 7).Value = sa_count
 	ObjExcel.Cells(4, 6).Value = "Percent of cases meeting criteria:"
 	ObjExcel.Cells(4, 7).NumberFormat = "0.00%"
-	ObjExcel.Cells(4, 7).Value = active_criteria_total / sa_count
+	if sa_count <> 0 THEN ObjExcel.Cells(4, 7).Value = active_criteria_total / sa_count
 	stats_row = 5
 END IF
 IF caper_check = checked then
@@ -612,7 +612,7 @@ IF caper_check = checked then
 	ObjExcel.Cells(stats_row, 7).Value = ca_count
 	ObjExcel.Cells(stats_row + 1, 6).Value = "Percent of cases meeting criteria:"
 	ObjExcel.Cells(stats_row + 1, 7).NumberFormat = "0.00%"
-	ObjExcel.Cells(stats_row + 1, 7).Value = (caper_closure_total + caper_denial_total) / ca_count
+	if ca_count <> 0 THEN ObjExcel.Cells(stats_row + 1, 7).Value = (caper_closure_total + caper_denial_total) / ca_count
 END IF
 
 'Autofitting columns
