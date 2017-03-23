@@ -92,7 +92,7 @@ EndDialog
 
 'Determining specific county for multicounty agencies...
 get_county_code
-'two_digit_county_code = "36"
+
 'Connects to BlueZone
 EMConnect ""
 
