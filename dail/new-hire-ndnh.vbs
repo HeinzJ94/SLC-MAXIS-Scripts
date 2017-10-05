@@ -1,22 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Explore
- @courtrightd
- Sign out
- Unwatch 1
-  Star 0  Fork 19 courtrightd/BZS-FuncLib
-forked from MN-Script-Team/BZS-FuncLib
- Code  Pull requests 0  Projects 0  Settings Insights 
-Branch: master Find file Copy pathBZS-FuncLib/MASTER FUNCTIONS LIBRARY.vbs
-6983e7c  on Apr 6, 2016
- Veronica Cary #201: added the new function
-11 contributors @RobertFewins-Kalb @theVKC @IlseFerris @CDPotter @courtrightd @lpshanley @Y-Lor-Y @C-Love @StormageddonDLOA @MelissaFox-Stearns @mldietz
-RawBlameHistory     
-5713 lines (5322 sloc)  265 KB
 '---------------------------------------------------------------------------------------------------
 'HOW THIS SCRIPT WORKS:
 '
@@ -5729,15 +5710,4 @@ END FUNCTION
 FUNCTION write_TIKL_function(variable)									'DEPRECIATED AS OF 01/20/2015.
 	call write_variable_in_TIKL(variable)
 END FUNCTION
-© 2017 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-API
-Training
-Shop
-Blog
-About
+
