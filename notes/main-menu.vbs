@@ -329,6 +329,13 @@ script_array_D_to_F(script_num).description 			= "Template for explaining the in
 script_num = script_num + 1								'Increment by one
 ReDim Preserve script_array_D_to_F(script_num)			'Resets the array to add one more element to it
 Set script_array_D_to_F(script_num) = new script		'Set this array element to be a new script. Script details below...
+script_array_D_to_F(script_num).script_name 			= "Family Violence Waiver"
+script_array_D_to_F(script_num).file_name				= "family-violence-waiver.vbs"
+script_array_D_to_F(script_num).description 			= "Template for noting approval or closure of a Family Violence Waiver."
+
+script_num = script_num + 1								'Increment by one
+ReDim Preserve script_array_D_to_F(script_num)			'Resets the array to add one more element to it
+Set script_array_D_to_F(script_num) = new script		'Set this array element to be a new script. Script details below...
 script_array_D_to_F(script_num).script_name 			= "Foster Care HCAPP"
 script_array_D_to_F(script_num).file_name				= "foster-care-hcapp.vbs"
 script_array_D_to_F(script_num).description 			= "Template for noting foster care HCAPP info."
