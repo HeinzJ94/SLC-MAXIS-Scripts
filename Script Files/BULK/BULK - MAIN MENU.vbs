@@ -3,9 +3,9 @@ IF run_locally = TRUE THEN
 	script_repository = left(script_repository, len(script_repository) - 13)
 ELSE
 	IF use_master_branch = TRUE THEN
-		script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/master/"									'Resets to release settings
+		script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/"									'Resets to release settings
 	ELSE
-		script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/RELEASE/"
+		script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/RELEASE/"
 	END IF
 End If 
 
