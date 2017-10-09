@@ -5,7 +5,7 @@ ELSE
 	IF use_master_branch = TRUE THEN
 		script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/"									'Resets to release settings
 	ELSE
-		script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/release/"
+		script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/"
 	END IF
 End If 
 
