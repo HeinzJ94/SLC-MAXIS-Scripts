@@ -80,7 +80,7 @@ If MEMO_edit_mode_check <> "Notice Recipient Selection" then
   MsgBox "You do not appear to be able to make a MEMO for this case. Are you in inquiry? Is this case out of county? Check these items and try again."
   Stopscript
 End if
-EMWriteScreen "x", 5, 10
+EMWriteScreen "x", 5, 12
 transmit
 Call write_variable_in_SPEC_MEMO ("************************************************************")
 Call write_variable_in_SPEC_MEMO ("This notice is to remind you to report changes to your county worker by the 10th of the month following the month of the change. Changes that must be reported are address, people in your household, income, shelter costs and other changes such as legal obligation to pay child support. If you don't know whether to report a change, contact your county worker.")
