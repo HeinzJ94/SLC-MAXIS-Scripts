@@ -44,6 +44,7 @@
 
  'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
  'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+ call changelog_update("01/02/2017", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates.", "David Courtright, St Louis County")
  call changelog_update("04/04/2017", "Added handling for multiple recipient changes to SPEC/WCOM", "David Courtright, St Louis County")
  call changelog_update("12/27/2016", "Script can now write to a MEMO is a waiting notice is not available/found.", "Charles Potter, DHS")
  call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
@@ -236,34 +237,7 @@ END IF
 'based on output of fancy message box we either end the script or write the WCOM
 IF swap_to_memo = vbNo THEN script_end_procedure("No waiting HC results were found for the requested month")
 IF swap_to_memo = vbYes THEN
-  CALL navigate_to_MAXIS_screen("SPEC","MEMO")
-			PF5
-			'Checking for an AREP. If there's an AREP it'll navigate to STAT/AREP, check to see if the forms go to the AREP. If they do, it'll write X's in those fields below.
-			row = 4                             'Defining row and col for the search feature.
-			col = 1
-			EMSearch "ALTREP", row, col         'Row and col are variables which change from their above declarations if "ALTREP" string is found.
-			IF row > 4 THEN                     'If it isn't 4, that means it was found.
-				arep_row = row                                          'Logs the row it found the ALTREP string as arep_row
-				call navigate_to_MAXIS_screen("STAT", "AREP")           'Navigates to STAT/AREP to check and see if forms go to the AREP
-				EMReadscreen forms_to_arep, 1, 10, 45                   'Reads for the "Forms to AREP?" Y/N response on the panel.
-				call navigate_to_MAXIS_screen("SPEC", "MEMO")           'Navigates back to SPEC/MEMO
-				PF5                                                     'PF5s again to initiate the new memo process
-			END IF
-			'Checking for SWKR
-			row = 4                             'Defining row and col for the search feature.
-			col = 1
-			EMSearch "SOCWKR", row, col         'Row and col are variables which change from their above declarations if "SOCWKR" string is found.
-			IF row > 4 THEN                     'If it isn't 4, that means it was found.
-				swkr_row = row                                          'Logs the row it found the SOCWKR string as swkr_row
-				call navigate_to_MAXIS_screen("STAT", "SWKR")         'Navigates to STAT/SWKR to check and see if forms go to the SWKR
-				EMReadscreen forms_to_swkr, 1, 15, 63                'Reads for the "Forms to SWKR?" Y/N response on the panel.
-				call navigate_to_MAXIS_screen("SPEC", "MEMO")         'Navigates back to SPEC/MEMO
-				PF5                                           'PF5s again to initiate the new memo process
-			END IF
-			EMWriteScreen "x", 5, 10                                        'Initiates new memo to client
-			IF forms_to_arep = "Y" THEN EMWriteScreen "x", arep_row, 10     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
-			IF forms_to_swkr = "Y" THEN EMWriteScreen "x", swkr_row, 10     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
-			transmit
+      start_a_new_spec_memo 'Open the memo and select recipients
       Write_variable_in_SPEC_MEMO("Although your spenddown is $" & spenddown & " your recipient amount (the amount you pay each month) is $" & recipient_amt & ". This is how the recipient amount is determined:")
       Write_variable_in_SPEC_MEMO("Income: $" & income &" - MA Income Standard $" & income_standard & " = $" & spenddown)
       Write_variable_in_SPEC_MEMO("Spenddown:            $" & spenddown)
