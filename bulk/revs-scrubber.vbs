@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("1/2/2018", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates.", "Casey Love, Ramsey County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -716,38 +717,9 @@ DO 								'looping until it meets a blank excel cell without a case number
 
 	ELSE			'ELSE in this case is LIVE cases, not testing in developer mode
 
-		CALL navigate_to_MAXIS_screen("SPEC", "MEMO")
-		PF5
-		EMReadScreen memo_display_check, 12, 2, 33
-		If memo_display_check = "Memo Display" then script_end_procedure("You are not able to go into update mode. Did you enter in inquiry by mistake? Please try again in production.")
-		'Checking for AREP if found sending memo to them as well
-		row = 4
-		col = 1
-		EMSearch "ALTREP", row, col
-		IF row > 4 THEN
-			arep_row = row
-			CALL navigate_to_MAXIS_screen("STAT", "AREP")
-			EMReadscreen forms_to_arep, 1, 10, 45
-			call navigate_to_MAXIS_screen("SPEC", "MEMO")
-			PF5
-		END IF
-
-		'Checking for SWKR if found sending MEMO to them as well
-		row = 4
-		col = 1
-		EMSearch "SOCWKR", row, col
-		IF row > 4 THEN
-			swkr_row = row
-			call navigate_to_MAXIS_screen("STAT", "SWKR")
-			EMReadscreen forms_to_swkr, 1, 15, 63
-			call navigate_to_MAXIS_screen("SPEC", "MEMO")
-			PF5
-		END IF
-
-		EMWriteScreen "x", 5, 10
-		IF forms_to_arep = "Y" THEN EMWriteScreen "x", arep_row, 10
-		IF forms_to_swkr = "Y" THEN EMWriteScreen "x", swkr_row, 10
-		transmit
+		'Navigating to SPEC/MEMO and starting a new memo
+		start_a_new_spec_memo
+		
 		'Writing the appointment and letter into a memo
 		EMSendKey("************************************************************")
 		CALL write_variable_in_SPEC_MEMO("The State DHS sent you a packet of paperwork. This is renewal paperwork for your SNAP case. Your SNAP case is set to close on " &  last_day_of_recert & ". Please sign, date and return your renewal paperwork by " & left(CM_plus_1_mo, 2) & "/08/" & right(CM_plus_1_yr, 2) & ".")
