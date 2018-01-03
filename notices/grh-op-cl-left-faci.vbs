@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("1/2/2018", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates.", "Casey Love, Ramsey County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -241,15 +242,15 @@ END If
 
 'Sending the SPEC/MEMO to FACI----------------------------------------------------------------------------------------------------
 'Navigates to SPEC/MEMO and selects a new MEMO
-call navigate_to_MAXIS_screen("SPEC", "MEMO")
+call navigate_to_MAXIS_screen("SPEC", "MEMO")					'This script does not use the function for a spec memo as it sends the memo to 'OTHER' instead of one of the preselected options. This option is not build in to the function.
 PF5
 'Selects "other recipient of your choosing" instead of the client to send the MEMO to
 other_row = 6
 DO				'loop to search for OTHER recipient
-	EMReadscreen find_other, 5, other_row, 12
+	EMReadscreen find_other, 5, other_row, 15
 	If find_other <> "OTHER" THEN other_row = other_row + 1
 LOOP until find_other = "OTHER"
-EMWritescreen "x", other_row, 10   'writes X on row where the phrase OTHER was found.
+EMWritescreen "x", other_row, 12   'writes X on row where the phrase OTHER was found.
 transmit
 'Writes in Name of Facility and the address which MEMO is being sent
 EMWritescreen facility_name, 13, 24
