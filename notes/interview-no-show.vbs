@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("1/2/2018", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates.", "Casey Love, Ramsey County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -311,19 +312,16 @@ If nomi_sent = 1 then 'Asks if this is a recert. A recert uses a SPEC/MEMO notic
 		If still_self = "Select Function Menu (SELF)" then script_end_procedure("Script was not able to get past SELF menu. Is case in background?")
 
 		'Creates a new MEMO. If it's unable the script will stop.
-		PF5
-		EMReadScreen memo_display_check, 12, 2, 33
-		If memo_display_check = "Memo Display" then script_end_procedure("You are not able to go into update mode. Did you enter in inquiry by mistake? Please try again in production.")
-		EMWriteScreen "x", 5, 10
-		transmit
+		start_a_new_spec_memo
 
 		'Writes the info into the MEMO.
-		EMSetCursor 3, 15
-		EMSendKey "************************************************************"
-		EMSendKey "You have missed your Food Support interview that was scheduled for " & interview_date & " at " & interview_time & "." & "<newline>" & "<newline>"
-		EMSendKey "Please contact your worker at the telephone number listed below to reschedule the required Food Support interview." & "<newline>" & "<newline>"
-		EMSendKey "The Combined Application Form (DHS-5223), the interview by phone or in the office, and the mandatory verifications needed to process your recertification must be completed by " & last_day_for_recert & " or your Food Support case will Auto-Close on this date." & "<newline>"
-		EMSendKey "************************************************************"
+		Call write_variable_in_SPEC_MEMO ("************************************************************")
+		Call write_variable_in_SPEC_MEMO ("You have missed your Food Support interview that was scheduled for " & interview_date & " at " & interview_time & ".")
+		Call write_variable_in_SPEC_MEMO (" ")
+		Call write_variable_in_SPEC_MEMO ("Please contact your worker at the telephone number listed below to reschedule the required Food Support interview.")
+		Call write_variable_in_SPEC_MEMO (" ")
+		Call write_variable_in_SPEC_MEMO ("The Combined Application Form (DHS-5223), the interview by phone or in the office, and the mandatory verifications needed to process your recertification must be completed by " & last_day_for_recert & " or your Food Support case will Auto-Close on this date.")
+		Call write_variable_in_SPEC_MEMO ("************************************************************")
 		PF4
 
 	Elseif recert_check = 7 then
