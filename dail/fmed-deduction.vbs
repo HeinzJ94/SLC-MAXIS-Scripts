@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("1/2/2018", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates. Additional updates to update syntax.", "Casey Love, Ramsey County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -65,48 +66,40 @@ EndDialog
 Dialog worker_sig_dialog
 If ButtonPressed_worker_sig_dialog = 0 then stopscript
 
-EMWriteScreen "p", 6, 3
-EMSendKey "<enter>"
-EMWaitReady 0, 0
+EMReadScreen MAXIS_case_number, 8, 5, 73
+MAXIS_case_number = trim(MAXIS_case_number)
 
-EMWriteScreen "memo", 20, 70
-EMSendKey "<enter>"
-EMWaitReady 0, 0
+EMWriteScreen "P", 6, 3
+transmit
 
-EMSendKey "<PF5>"
-EMWaitReady 0, 0
+EMWriteScreen "MEMO", 20, 70
 
-EMWriteScreen "x", 5, 10
-EMSendKey "<enter>"
-EMWaitReady 0, 0
+start_a_new_spec_memo
 
-EMSendKey "You are turning 60 next month, so you may be eligible for a new deduction for SNAP." + "<newline>" + "<newline>"
-EMSendKey "Clients who are over 60 years old may receive increased SNAP benefits if they have recurring medical bills over $35 each month." + "<newline>" + "<newline>"
-EMSendKey "If you have medical bills over $35 each month, please contact your worker to discuss adjusting your benefits. You will need to send in proof of the medical bills, such as pharmacy receipts, an explanation of benefits, or premium notices." + "<newline>" + "<newline>"
-EMSendKey "Please call your worker with questions."
-EMSendKey "<PF4>"
-EMWaitReady 0, 0
+Call write_variable_in_SPEC_MEMO ("You are turning 60 next month, so you may be eligible for a new deduction for SNAP. Clients who are over 60 years old may receive increased SNAP benefits if they have recurring medical bills over $35 each month.")
+Call write_variable_in_SPEC_MEMO ("---")
+Call write_variable_in_SPEC_MEMO ("If you have medical bills over $35 each month, please contact your worker to discuss adjusting your benefits. You will need to send in proof of the medical bills, such as pharmacy receipts, an explanation of benefits, or premium notices.")
+Call write_variable_in_SPEC_MEMO ("  ")
+Call write_variable_in_SPEC_MEMO ("Please call your worker with questions.")
+
+PF4 
 
 EMWriteScreen "case", 19, 22
 EMWriteScreen "note", 19, 70
-EMSendKey "<enter>"
-EMWaitReady 0, 0
+transmit
 
-EMSendKey "<PF9>"
-EMWaitReady 0, 0
+start_a_blank_CASE_NOTE
 
-EMSendKey "MEMBER HAS TURNED 60 - NOTIFY ABOUT POSSIBLE FMED DEDUCTION" + "<newline>"
-EMSendKey "---" + "<newline>"
-EMSendKey "* Sent MEMO to client about FMED deductions." + "<newline>"
-EMSendKey "---" + "<newline>"
-EMSendKey worker_sig + ", using automated script."
+Call write_variable_in_CASE_NOTE ("MEMBER HAS TURNED 60 - NOTIFY ABOUT POSSIBLE FMED DEDUCTION")
+Call write_variable_in_CASE_NOTE ("---")
+Call write_variable_in_CASE_NOTE ("* Sent MEMO to client about FMED deductions.")
+Call write_variable_in_CASE_NOTE ("---")
+Call write_variable_in_CASE_NOTE (worker_sig & ", using automated script.")
 
-EMSendKey "<PF3>"
-EMWaitReady 0, 0
+PF3
 
-EMSendKey "<PF3>"
-EMWaitReady 0, 0
+PF3
 
-MsgBox "The script has sent a MEMO to the client about the possible FMED deduction, and case noted the action."
+Call navigate_to_MAXIS_screen ("DAIL", "DAIL")
 
-script_end_procedure("")
+script_end_procedure("Success! The script has sent a MEMO to the client about the possible FMED deduction, and case noted the action.")
