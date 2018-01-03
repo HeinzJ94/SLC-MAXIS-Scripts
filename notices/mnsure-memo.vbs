@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("1/2/2018", "Fixing bug that prevented the script from writing SPEC/MEMO due to MAXIS updates.", "Casey Love, Ramsey County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -142,12 +143,8 @@ If radiogroup1 = 0 then
 		Stopscript
 	END IF
 Else
-	'Navigating to SPEC/MEMO
-	call navigate_to_MAXIS_screen("SPEC", "MEMO")
-	'Creates a new MEMO. If it's unable the script will stop.
-	PF5
-	EMWriteScreen "x", 5, 10
-	transmit
+	'Navigating to SPEC/MEMO - and starting a new memo
+	start_a_new_spec_memo
 	'Sends the home key to get to the top of the memo.
 	EMSendKey "<home>"
 
