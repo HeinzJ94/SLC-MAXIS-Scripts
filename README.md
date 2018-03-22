@@ -1,9 +1,7 @@
 NOTE
 ===
 
-This project is unmaintained as of 01/27/2017, due to lack of staffing at MN-DHS. If you have any questions on this project's status, contact kathy.bruen@state.mn.us, Manager for SNAP Program Integrity.
----
-
+This project is being maintained in a limited capacity at this time for Saint Louis County. This project is a clone of MN-Script-team/DHS-MAXIS-Scripts, with limited bug-fixing installed.  Information below is taken from that repository and will soon be updated to reflect SLC's project.
 
 BlueZone Scripts | DHS-MAXIS-Scripts
 ===
