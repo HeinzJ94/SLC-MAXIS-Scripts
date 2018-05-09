@@ -50,6 +50,7 @@ call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 changelog_display
 'END CHANGELOG BLOCK =======================================================================================================
 
+' TODO add handling to send a MEMO - https://github.com/MN-Script-Team/DHS-MAXIS-Scripts/issues/2928'
 
 '------------------THIS SCRIPT IS DESIGNED TO BE RUN FROM THE DAIL SCRUBBER.
 '------------------As such, it does NOT include protections to be ran independently.
