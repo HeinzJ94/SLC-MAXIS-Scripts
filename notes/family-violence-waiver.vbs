@@ -115,24 +115,24 @@ END IF
 
 'dialog for pre-60 closure'
 IF action_taken = "Closure" and time_status = "Pre 60 Month" THEN
-BeginDialog, 0, 0, 286, 200, "Family Violence Waiver Approval"
+BeginDialog , 0, 0, 286, 200, "Family Violence Waiver Approval"
   ButtonGroup ButtonPressed
     OkButton 150, 175, 50, 15
     CancelButton 205, 175, 50, 15
-  EditBox 75, 5, 110, 15, ES_plan_date
-  Text 20, 10, 55, 10, "Status Update Received:"
-  EditBox 75, 25, 200, 15, closure_reason
-  Text 10, 30, 60, 10, "Reason for closure:"
-  EditBox 75, 45, 20, 15, closure_footer_month
-  EditBox 110, 45, 20, 15, closure_footer_year
-  Text 100, 45, 5, 15, "/"
-  Text 10, 45, 60, 20, "Closure month: (first counted TANF month)"
-  IF time_status = "Pre 60 Month" THEN CheckBox 10, 70, 70, 15, "MEMI Updated", MEMI_check
-  CheckBox 10, 90, 120, 15, "New MAXIS approval completed", approval_check
+  EditBox 75, 10, 110, 15, ES_plan_date
+  Text 10, 10, 55, 15, "Status Update Received:"
+  EditBox 75, 35, 200, 15, closure_reason
+  Text 10, 35, 60, 15, "Reason for closure:"
+  EditBox 75, 65, 20, 15, closure_footer_month
+  EditBox 110, 65, 20, 15, closure_footer_year
+  Text 100, 65, 5, 15, "/"
+  Text 10, 60, 60, 30, "Closure month: (first counted TANF month)"
+  CheckBox 10, 105, 120, 15, "New MAXIS approval completed", approval_check
   CheckBox 10, 125, 240, 15, "Check here to have the script send a SPEC/MEMO about the approval", memo_check
-	EditBox 150, 155, 100, 15, worker_signature
-	Text 80, 155, 65, 15, "Worker Signature:"
+  EditBox 150, 155, 100, 15, worker_signature
+  Text 80, 155, 65, 15, "Worker Signature:"
 EndDialog
+
 DO
 	err_msg = ""                                       'Blanks this out every time the loop runs. If mandatory fields aren't entered, this variable is updated below with messages, which then display for the worker.
 	Dialog
@@ -186,39 +186,41 @@ END IF
 'CALL check_for_MAXIS(True)
 'Navigate to SPEC/MEMO and send the appropriate note to the client
 IF memo_check = checked THEN
-	call navigate_to_MAXIS_screen("SPEC", "MEMO")
 
-	'Creates a new MEMO. If it's unable the script will stop.
-	PF5
-	EMReadScreen memo_display_check, 12, 2, 33
-	If memo_display_check = "Memo Display" then script_end_procedure("You are not able to go into update mode. Did you enter in inquiry by mistake? Please try again in production.")
+'Navigating to SPEC/MEMO
+call navigate_to_MAXIS_screen("SPEC", "MEMO")
 
-	'Checking for an AREP. If there's an AREP it'll navigate to STAT/AREP, check to see if the forms go to the AREP. If they do, it'll write X's in those fields below.
-	row = 4                             'Defining row and col for the search feature.
-	col = 1
-	EMSearch "ALTREP", row, col         'Row and col are variables which change from their above declarations if "ALTREP" string is found.
-	IF row > 4 THEN                     'If it isn't 4, that means it was found.
-		arep_row = row                                          'Logs the row it found the ALTREP string as arep_row
-		call navigate_to_MAXIS_screen("STAT", "AREP")           'Navigates to STAT/AREP to check and see if forms go to the AREP
-		EMReadscreen forms_to_arep, 1, 10, 45                   'Reads for the "Forms to AREP?" Y/N response on the panel.
-		call navigate_to_MAXIS_screen("SPEC", "MEMO")           'Navigates back to SPEC/MEMO
-		PF5                                                     'PF5s again to initiate the new memo process
-	END IF
-	'Checking for SWKR
-	row = 4                             'Defining row and col for the search feature.
-	col = 1
-	EMSearch "SOCWKR", row, col         'Row and col are variables which change from their above declarations if "SOCWKR" string is found.
-	IF row > 4 THEN                     'If it isn't 4, that means it was found.
-		swkr_row = row                                          'Logs the row it found the SOCWKR string as swkr_row
-		call navigate_to_MAXIS_screen("STAT", "SWKR")         'Navigates to STAT/SWKR to check and see if forms go to the SWKR
-		EMReadscreen forms_to_swkr, 1, 15, 63                'Reads for the "Forms to SWKR?" Y/N response on the panel.
-		call navigate_to_MAXIS_screen("SPEC", "MEMO")         'Navigates back to SPEC/MEMO
-		PF5                                           'PF5s again to initiate the new memo process
-	END IF
-	EMWriteScreen "x", 5, 10                                        'Initiates new memo to client
-	IF forms_to_arep = "Y" THEN EMWriteScreen "x", arep_row, 10     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
-	IF forms_to_swkr = "Y" THEN EMWriteScreen "x", swkr_row, 10     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
-	transmit                                                        'Transmits to start the memo writing process
+'Creates a new MEMO. If it's unable the script will stop.
+PF5
+EMReadScreen memo_display_check, 12, 2, 33
+If memo_display_check = "Memo Display" then script_end_procedure("You are not able to go into update mode. Did you enter in inquiry by mistake? Please try again in production.")
+
+'Checking for an AREP. If there's an AREP it'll navigate to STAT/AREP, check to see if the forms go to the AREP. If they do, it'll write X's in those fields below.
+row = 4                             'Defining row and col for the search feature.
+col = 1
+EMSearch "ALTREP", row, col         'Row and col are variables which change from their above declarations if "ALTREP" string is found.
+IF row > 4 THEN                     'If it isn't 4, that means it was found.
+	arep_row = row                                          'Logs the row it found the ALTREP string as arep_row
+	call navigate_to_MAXIS_screen("STAT", "AREP")           'Navigates to STAT/AREP to check and see if forms go to the AREP
+	EMReadscreen forms_to_arep, 1, 10, 45                   'Reads for the "Forms to AREP?" Y/N response on the panel.
+	call navigate_to_MAXIS_screen("SPEC", "MEMO")           'Navigates back to SPEC/MEMO
+	PF5                                                     'PF5s again to initiate the new memo process
+END IF
+'Checking for SWKR
+row = 4                             'Defining row and col for the search feature.
+col = 1
+EMSearch "SOCWKR", row, col         'Row and col are variables which change from their above declarations if "SOCWKR" string is found.
+IF row > 4 THEN                     'If it isn't 4, that means it was found.
+	swkr_row = row                                          'Logs the row it found the SOCWKR string as swkr_row
+	call navigate_to_MAXIS_screen("STAT", "SWKR")         'Navigates to STAT/SWKR to check and see if forms go to the SWKR
+	EMReadscreen forms_to_swkr, 1, 15, 63                'Reads for the "Forms to SWKR?" Y/N response on the panel.
+	call navigate_to_MAXIS_screen("SPEC", "MEMO")         'Navigates back to SPEC/MEMO
+	PF5                                           'PF5s again to initiate the new memo process
+END IF
+EMWriteScreen "x", 5, 12                                       'Initiates new memo to client
+IF forms_to_arep = "Y" THEN EMWriteScreen "x", arep_row, 12     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
+IF forms_to_swkr = "Y" THEN EMWriteScreen "x", swkr_row, 12     'If forms_to_arep was "Y" (see above) it puts an X on the row ALTREP was found.
+transmit                                                        'Transmits to start the memo writing process
 
 	'Writes the MEMO based on action and time status.
 	IF action_taken = "Approval" and time_status = "Pre 60 Month" THEN
@@ -240,14 +242,13 @@ IF memo_check = checked THEN
 		"separate notice regarding the status of your benefits. If you believe this waiver end is in error, please contact your job counselor." &_
 		" If you have any questions concerning the status of your benefits, please contact the county. ")
 	END IF
-
 	PF4 'exit the memo'
 END IF 'Close out the memo section'
 
 'Write a TIKL if requested'
-IF TIKL_check = checked THEN
+IF action_taken = "Approval" AND TIKL_check = checked THEN
 	call navigate_to_MAXIS_screen("DAIL", "WRIT")
-	call create_maxis_friendly_date(approval_date, 82, 5, 18)
+	call create_maxis_friendly_date(dateadd("m", 3, approval_date), 82, 5, 18)
 	call write_variable_in_TIKL("Family Violence Waiver approaching 3 months, please review.")
 	transmit
 	PF3
