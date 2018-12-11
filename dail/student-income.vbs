@@ -89,29 +89,29 @@ EMWaitReady 1, 0
 
 'The following will generate a TIKL formatted date for 10 days from now.
 
-If DatePart("d", Now + 10) = 1 then TIKL_day = "01"
-If DatePart("d", Now + 10) = 2 then TIKL_day = "02"
-If DatePart("d", Now + 10) = 3 then TIKL_day = "03"
-If DatePart("d", Now + 10) = 4 then TIKL_day = "04"
-If DatePart("d", Now + 10) = 5 then TIKL_day = "05"
-If DatePart("d", Now + 10) = 6 then TIKL_day = "06"
-If DatePart("d", Now + 10) = 7 then TIKL_day = "07"
-If DatePart("d", Now + 10) = 8 then TIKL_day = "08"
-If DatePart("d", Now + 10) = 9 then TIKL_day = "09"
-If DatePart("d", Now + 10) > 9 then TIKL_day = DatePart("d", Now + 10)
+If DatePart("d", Now + 11) = 1 then TIKL_day = "01"
+If DatePart("d", Now + 11) = 2 then TIKL_day = "02"
+If DatePart("d", Now + 11) = 3 then TIKL_day = "03"
+If DatePart("d", Now + 11) = 4 then TIKL_day = "04"
+If DatePart("d", Now + 11) = 5 then TIKL_day = "05"
+If DatePart("d", Now + 11) = 6 then TIKL_day = "06"
+If DatePart("d", Now + 11) = 7 then TIKL_day = "07"
+If DatePart("d", Now + 11) = 8 then TIKL_day = "08"
+If DatePart("d", Now + 11) = 9 then TIKL_day = "09"
+If DatePart("d", Now + 11) > 9 then TIKL_day = DatePart("d", Now + 10)
 
-If DatePart("m", Now + 10) = 1 then TIKL_month = "01"
-If DatePart("m", Now + 10) = 2 then TIKL_month = "02"
-If DatePart("m", Now + 10) = 3 then TIKL_month = "03"
-If DatePart("m", Now + 10) = 4 then TIKL_month = "04"
-If DatePart("m", Now + 10) = 5 then TIKL_month = "05"
-If DatePart("m", Now + 10) = 6 then TIKL_month = "06"
-If DatePart("m", Now + 10) = 7 then TIKL_month = "07"
-If DatePart("m", Now + 10) = 8 then TIKL_month = "08"
-If DatePart("m", Now + 10) = 9 then TIKL_month = "09"
-If DatePart("m", Now + 10) > 9 then TIKL_month = DatePart("m", Now + 10)
+If DatePart("m", Now + 11) = 1 then TIKL_month = "01"
+If DatePart("m", Now + 11) = 2 then TIKL_month = "02"
+If DatePart("m", Now + 11) = 3 then TIKL_month = "03"
+If DatePart("m", Now + 11) = 4 then TIKL_month = "04"
+If DatePart("m", Now + 11) = 5 then TIKL_month = "05"
+If DatePart("m", Now + 11) = 6 then TIKL_month = "06"
+If DatePart("m", Now + 11) = 7 then TIKL_month = "07"
+If DatePart("m", Now + 11) = 8 then TIKL_month = "08"
+If DatePart("m", Now + 11) = 9 then TIKL_month = "09"
+If DatePart("m", Now + 11) > 9 then TIKL_month = DatePart("m", Now + 10)
 
-TIKL_year = DatePart("yyyy", Now + 10)
+TIKL_year = DatePart("yyyy", Now + 11)
 
 EMSetCursor 5, 18
 EMSendKey TIKL_month & TIKL_day & TIKL_year - 2000
