@@ -124,7 +124,7 @@ If LTC_case = vbYes then 									'Shows dialog if LTC
 				EndDialog
 				DIALOG 					'Calling a dialog without a assigned variable will call the most recently defined dialog
 				cancel_confirmation													'quits if cancel is pressed
-				If buttonpressed = CD_plus_10_button then verif_due_date = dateadd("d", 10, date) & ""		'Fills in current date + 10 if you press the button.
+				If buttonpressed = CD_plus_10_button then verif_due_date = dateadd("d", 11, date) & ""		'Fills in current date + 10 if you press the button.
 			Loop until buttonpressed = OK																	'Loops until you press OK
 			If MAXIS_case_number = "" then MsgBox "You must have a case number to continue!"		'Yells at you if you don't have a case number
 		Loop until MAXIS_case_number <> ""														'Loops until that case number exists
@@ -178,7 +178,7 @@ ELSEIF LTC_case = vbNo then							'Shows dialog if not LTC
 				 EndDialog
 				DIALOG 					'Calling a dialog without a assigned variable will call the most recently defined dialog
 				cancel_confirmation													'quits if cancel is pressed
-				If buttonpressed = CD_plus_10_button then verif_due_date = dateadd("d", 10, date) & ""		'Fills in current date + 10 if you press the button.
+				If buttonpressed = CD_plus_10_button then verif_due_date = dateadd("d", 11, date) & ""		'Fills in current date + 10 if you press the button.
 			Loop until buttonpressed = OK																	'Loops until you press OK
 			If MAXIS_case_number = "" then MsgBox "You must have a case number to continue!"		'Yells at you if you don't have a case number
 		Loop until MAXIS_case_number <> ""														'Loops until that case number exists
