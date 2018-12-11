@@ -279,7 +279,7 @@ EMSendKey "w"
 transmit
 
 'The following will generate a TIKL formatted date for 10 days from now, and add it to the TIKL
-call create_MAXIS_friendly_date(date, 10, 5, 18)
+call create_MAXIS_friendly_date(date, 11, 5, 18)
 
 'Setting cursor on 9, 3, because the message goes beyond a single line and EMWriteScreen does not word wrap.
 EMSetCursor 9, 3
