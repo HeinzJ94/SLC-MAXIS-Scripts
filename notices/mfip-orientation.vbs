@@ -667,7 +667,7 @@ Do
         	agency_address.city = "Duluth"
         	agency_address.zip = "55802"
     	ELSEIF interview_location = "Virginia" THEN
-        	agency_address.street = "820 N 9th St"
+		agency_address.street = "307 1st St S"
         	agency_address.city = "Virginia"
         	agency_address.zip = "55792"
     	ELSEIF interview_location = "Hibbing" THEN
