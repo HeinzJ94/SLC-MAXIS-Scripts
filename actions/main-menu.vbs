@@ -39,7 +39,8 @@ END IF
 changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
-'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County"
+call changelog_update("01/07/2019", "Added new ACTION script 'MA MSA GRH FIATER'.", "David Courtright, St Louis County")
 call changelog_update("01/17/2017", "Added new ACTION script 'ABAWD FIATER'.", "Ilse Ferris, Hennepin County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
@@ -50,9 +51,9 @@ changelog_display
 'LOADING LIST OF SCRIPTS FROM GITHUB REPOSITORY===========================================================================
 IF run_locally = FALSE or run_locally = "" THEN	   'If the scripts are set to run locally, it skips this and uses an FSO below.
 	IF use_master_branch = TRUE THEN			   'If the default_directory is C:\DHS-MAXIS-Scripts\Script Files, you're probably a scriptwriter and should use the master branch.
-		script_list_URL = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/master/COMPLETE%20LIST%20OF%20SCRIPTS.vbs"
+						script_list_URL = "https://raw.githubusercontent.com/SLC-MAXIS-SCRIPTS/SLC-MAXIS-SCRIPTS/master/COMPLETE%20LIST%20OF%20SCRIPTS.vbs"
 	Else											'Everyone else should use the release branch.
-		script_list_URL = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/RELEASE/COMPLETE%20LIST%20OF%20SCRIPTS.vbs"
+		script_list_URL = "https://raw.githubusercontent.com/SLC-MAXIS-SCRIPTS/SLC-MAXIS-SCRIPTS/RELEASE/COMPLETE%20LIST%20OF%20SCRIPTS.vbs"
 	End if
 
 	SET req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a script_list_URL
