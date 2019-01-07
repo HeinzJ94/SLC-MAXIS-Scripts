@@ -842,7 +842,7 @@ FOR hhmm_row = 8 to 19
 NEXT
 
 EMReadScreen ma_case, 4, hhmm_row, 26					' }
-IF ma_case <> "_ MA" THEN msgbox "error"				' } looking to see that the client has MA
+IF ma_case <> "_ MA" THEN script_end_procedure("No MA Results found, the script will now stop.")' } looking to see that the client has MA
 
 CALL write_value_and_transmit("X", hhmm_row, 26)		' navigating to BSUM for that client's MA
 
