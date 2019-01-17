@@ -1038,11 +1038,11 @@ PF4
 interview_info = interview_date & " " & interview_time
 
 'TIKLing to remind the worker to send NOMI if appointment is missed
-CALL navigate_to_MAXIS_screen("DAIL", "WRIT")
-CALL create_MAXIS_friendly_date(interview_date, 0, 5, 18)
-Call write_variable_in_TIKL("~*~*~CLIENT WAS SENT AN APPT LETTER FOR INTERVIEW ON " & interview_info & ". IF MISSED SEND NOMI.")
-transmit
-PF3
+'CALL navigate_to_MAXIS_screen("DAIL", "WRIT")
+'CALL create_MAXIS_friendly_date(interview_date, 0, 5, 18)
+'Call write_variable_in_TIKL("~*~*~CLIENT WAS SENT AN APPT LETTER FOR INTERVIEW ON " & interview_info & ". IF MISSED SEND NOMI.")
+'transmit
+'PF3
 
 'Navigates to CASE/NOTE and starts a blank one
 start_a_blank_CASE_NOTE
@@ -1079,11 +1079,11 @@ End if
 call write_bullet_and_variable_in_CASE_NOTE("Why interview is more than six days from now", expedited_explanation)
 call write_bullet_and_variable_in_CASE_NOTE("Client phone", client_phone)
 call write_variable_in_CASE_NOTE("* Client must complete interview by " & last_contact_day & ".")
-IF worker_county_code = "x127" then
-	call write_variable_in_CASE_NOTE("* TIKL created to call client on interview date. If applicant did not call in, then send NOMI if appropriate.")
-Else
-	call write_variable_in_CASE_NOTE("* TIKL created for interview date.")
-End if
+'IF worker_county_code = "x127" then
+'	call write_variable_in_CASE_NOTE("* TIKL created to call client on interview date. If applicant did not call in, then send NOMI if appropriate.")
+'Else
+'	call write_variable_in_CASE_NOTE("* TIKL created for interview date.")
+'End if
 If voicemail_check = checked then call write_variable_in_CASE_NOTE("* Left client a voicemail requesting a call back.")
 If forms_to_arep = "Y" then call write_variable_in_CASE_NOTE("* Copy of notice sent to AREP.")              'Defined above
 If forms_to_swkr = "Y" then call write_variable_in_CASE_NOTE("* Copy of notice sent to Social Worker.")     'Defined above
