@@ -38,6 +38,217 @@ IF IsEmpty(FuncLib_URL) = TRUE THEN	'Shouldn't load FuncLib if it already loaded
 END IF
 'END FUNCTIONS LIBRARY BLOCK================================================================================================
 
+
+'This function is used to error-check a HC renewal at the time of script run for common erros found in audits.  It looks for the following:
+'  -- SSA Income types with no ACCT panels - reminds worker to explain in case/note
+'  -- ACCT/SECU panel update dates, ver. codes - if marked complete or verifs needed is blank, reminds worker to update
+' -- Checks STAT/REVW for proper coding of exempt from 6 month renewals
+' -- prompts user to explain spenddown recipient amount etc. (future enhancement)'
+'--- STAT/REVW marked "U", or marked "I" even though script is marked complete.'
+
+Function check_for_HC_errors(proceed_to_note)
+
+'This section determines which HH  members are adults'
+	call navigate_to_MAXIS_screen("STAT", "MEMB")
+	hh_adult_array = ""
+	For each goat in hh_member_array
+		IF goat <> "01" THEN
+		EMWriteScreen goat, 20, 76
+		transmit
+		END IF
+		EMReadScreen member_age, 2, 8, 76
+		IF isnumeric(member_age) = true THEN
+			if member_age > 20 THEN
+				IF hh_adult_array = "" THEN hh_adult_array = goat
+				IF hh_adult_array <> "" then hh_adult_array = hh_adult_array & "|" & goat
+			END If
+		END If
+	Next
+	hh_adult_array = SPLIT(hh_adult_array, "|")
+IF unearned_income <> "" THEN
+	if ubound(hh_adult_array) >= 0 THEN 'We only need to check if there are adults in the hh, otherwise no asset test'
+		call navigate_to_MAXIS_screen("STAT", "UNEA")
+		should_have_acct = false 'resetting variable'
+		for each member in hh_member_array
+			IF member <> "01" THEN
+				EMWriteScreen member, 20, 79
+				transmit
+			END If
+			EMReadScreen total_panels, 2, 2, 78
+			IF isnumeric(total_panels) = true THEN 'THis prevents trying to go into PRIV cases'
+				IF total_panels <> "0 " THEN
+					For panel = 1 to total_panels
+						IF len(panel) = 1 THEN panel = "0" & panel
+						IF panel <> "01" THEN
+							EMWriteScreen panel, 20, 79
+							transmit
+						END IF
+						EMReadScreen income_type, 2, 5, 37 'check for income types that we seek'
+						IF income_type = "01" or income_type = "02" or income_type = "03" or income_type = "14" or income_type = "16" or income_type = "36" or income_type = "39" THEN
+							EMReadScreen amount_received, 7, 13, 68 'make sure they are actually receiving payment'
+							IF amount_received <> "       " and amount_received <> "_______" THEN
+								IF amount_received > 0 THEN should_have_acct = true
+							END if
+						END IF
+					NEXT
+				END IF
+			END IF
+		NEXT
+		IF should_have_acct = true THEN'This next section checks to see if accts exist for the depositing of funds'
+			call navigate_to_MAXIS_screen("STAT", "ACCT")
+			EMReadScreen total_panels, 1, 2, 78
+			IF isnumeric(total_panels) = true THEN
+				IF total_panels = 0 THEN
+					missing_account = true
+				ELSE
+					missing_account = true
+					for each member in hh_member_array
+						EMWriteScreen member, 20, 79
+						transmit
+						EMReadScreen total_panels, 2, 2, 78
+						IF total_panels <> 0 then missing_account = false
+					next
+				END IF
+			END IF
+		END IF
+	END if
+	IF missing_account = true THEN error_check = vbcr & "Warning: Your case includes SSA income, but does not have an account listed in MAXIS.  Ensure your case note explains where this income is deposited."
+END IF
+'---- END OF ACCT check
+' Checking asset verification codes and datestamp
+IF recert_status = "complete" or verifs_needed = "" THEN
+	call navigate_to_MAXIS_screen("STAT", "ACCT")
+	for each member in hh_adult_array
+		IF member <> "01" THEN
+			EMWriteScreen member, 20, 79
+			transmit
+		END If
+		EMReadScreen total_panels, 2, 2, 78
+		IF isnumeric(total_panels) = true THEN 'THis prevents trying to go into PRIV cases'
+			IF total_panels <> "0 " THEN
+				For panel = 1 to total_panels
+					IF len(panel) = 1 THEN panel = "0" & panel
+					IF panel <> "01" THEN
+						EMWriteScreen panel, 20, 79
+						transmit
+					END IF
+					EMReadScreen verif_code, 1, 10, 64
+					IF verif_code = "N" THEN
+						panel_found = "ACCT"
+						verif_code_error = TRUE
+					END IF
+					EMReadScreen update_date, 8, 11, 44
+					IF left(update_date, 2) = "__" or left(update_date, 2) = "  " Then update_date = "01 01 01" 'This prevents errors when the date is blank'
+					update_date = replace(update_date, " ", "/")
+
+					IF datediff("d", update_date, recert_datestamp) > 35 THEN
+						panel_found = "ACCT"
+						update_date_error = true
+						exit For
+					END IF
+				NEXT
+			END IF
+		END IF
+	NEXT
+	call navigate_to_MAXIS_screen("STAT", "SECU")
+	for each hh_member in hh_adult_array
+		IF hh_member <> "01" THEN
+			EMWriteScreen hh_member, 20, 79
+			transmit
+		END If
+		EMReadScreen total_panels, 2, 2, 78
+		IF total_panels <> "0 " THEN
+			For panel = 1 to total_panels
+				IF len(panel) = 1 THEN panel = "0" & panel
+				IF panel <> "01" THEN
+					EMWriteScreen panel, 20, 79
+					transmit
+				END IF
+				EMReadScreen verif_code, 1, 11, 50
+
+				EMReadScreen count_code, 1, 15, 64
+				IF count_code = "Y" THEN 'Only panels coded as counted need to be reverified'
+					IF verif_code = "N" THEN
+						panel_found = "SECU"
+						verif_code_error = TRUE
+					END IF
+					EMReadScreen update_date, 8, 11, 35
+					IF left(update_date, 2) = "__" or left(update_date, 2) = "  " Then update_date = "01 01 01" 'This prevents errors when the date is blank'
+					update_date = replace(update_date, " ", "/")
+					IF datediff("d", update_date, recert_datestamp) > 35 THEN 'If update is more than 75 days before review, incorrect.
+						panel_found = "SECU"
+						update_date_error = true
+						exit For
+					END IF
+				END IF
+			NEXT
+		END IF
+	NEXT
+		call navigate_to_MAXIS_screen("STAT", "OTHR")
+		for each chicken in hh_adult_array
+			IF chicken <> "01" THEN
+				EMWriteScreen chicken, 20, 79
+				transmit
+			END If
+			EMReadScreen total_panels, 2, 2, 78
+			IF total_panels <> "0 " THEN
+				For panel = 1 to total_panels
+					IF len(panel) = 1 THEN panel = "0" & panel
+					IF panel <> "01" THEN
+						EMWriteScreen panel, 20, 79
+						transmit
+					END IF
+					EMReadScreen count_code, 1, 15, 64
+					IF count_code = "Y" THEN 'only check panels that are counted'
+						EMReadScreen verif_code, 1, 10, 64
+						IF verif_code = "N" THEN
+							panel_found = "ACCT"
+							verif_code_error = TRUE
+						END IF
+						EMReadScreen update_date, 8, 10, 39
+						IF left(update_date, 2) = "__" or left(update_date, 2) = "  " Then update_date = "01 01 01" 'This prevents errors when the date is blank'
+							update_date = replace(update_date, " ", "/")
+						IF datediff("d", update_date, recert_datestamp) > 35 THEN
+							panel_found = "OTHR"
+							update_date_error = true
+							exit For
+						END IF
+					END If
+				NEXT
+			END IF
+		NEXT
+END IF
+'This section takes a gander at STAT/REVW coding
+Call navigate_to_MAXIS_screen("STAT", "REVW")
+EMWriteScreen "X", 5, 71
+transmit
+EMReadScreen exempt_code, 1, 9, 71
+EMReadScreen IR_date, 8, 8, 27
+EMReadScreen IAR_date, 8, 8, 71
+EMReadScreen received_date, 8, 6, 27
+EMReadScreen renewal_status, 1, 13, 43
+IF exempt_code <> "Y" THEN'Almost all cases are exempt, check it out if Otherwise
+	IF MAEPD_premium = "" THEN ''
+		IF earned_income = "" AND spenddown_check <> checked THEN exempt_error = true
+	END IF
+END IF
+IF renewal_status = "U" or renewal_status = "N" THEN status_error = TRUE
+IF renewal_status = "I" and recert_status = complete THEN status_error = True
+
+
+error_check = ""
+IF update_date_error = true and recert_status = "complete" THEN error_check = error_check & vbCr & "You marked the renewal as complete, but the verification date on the " & panel_found & " panel is not recent enough to be valid.  Please check your asset panels and verifications."
+IF verif_code_error = true and verifs_needed = "" THEN error_check = error_check & vbCr & "Verifs needed is blank, but the " & panel_found & " panel is marked as not verified."
+IF verif_code_error = true and recert_status = "complete" THEN error_check = error_check & vbCr & "You marked the renewal as complete, but the " & panel_found & " panel is coded as not verified."
+IF exempt_error = true then error_check = error_check & vbCr & "You have coded STAT/REVW as requiring 6 month renewals, but this case appears exempt."
+IF status_error = true then error_check = error_check & vbCr & "It appears you have forgotten to update the Renewal Status appropriately on STAT/REVW.  It is currently coded as ''" & renewal_status & "''"
+IF error_check <> "" THEN
+	error_box = msgbox("**** WARNING !!!!*******" & vbNewLine & "Please review the following potential errors before proceeding." & vbNewLine & error_check & vbNewLine & "Press OK to proceed to CASE/NOTE, or Cancel to return to the dialog.", vbOKCancel)
+	if error_box = vbCancel then proceed_to_note = false
+END IF
+END Function
+
+
 'CHANGELOG BLOCK ===========================================================================================================
 'Starts by defining a changelog array
 changelog = array()
@@ -63,15 +274,14 @@ BeginDialog case_number_and_footer_month_dialog, 0, 0, 161, 65, "Case number and
     CancelButton 85, 45, 50, 15
 EndDialog
 
-BeginDialog HC_ER_dialog, 0, 0, 456, 300, "HC ER dialog"
+BeginDialog HC_ER_dialog, 0, 0, 456, 325, "HC ER dialog"
   EditBox 75, 50, 50, 15, recert_datestamp
   DropListBox 185, 50, 75, 15, "(select one...)"+chr(9)+"complete"+chr(9)+"incomplete", recert_status
   EditBox 325, 50, 125, 15, HH_comp
   EditBox 60, 70, 390, 15, earned_income
   EditBox 70, 90, 380, 15, unearned_income
   EditBox 40, 110, 410, 15, assets
-  EditBox 60, 130, 95, 15, COEX_DCEX
-  EditBox 265, 130, 185, 15, CEI_availability
+  EditBox 110, 130, 340, 15, CEI_availability
   EditBox 100, 150, 350, 15, FIAT_reasons
   EditBox 50, 170, 400, 15, other_notes
   EditBox 45, 190, 405, 15, changes
@@ -82,11 +292,12 @@ BeginDialog HC_ER_dialog, 0, 0, 456, 300, "HC ER dialog"
   ButtonGroup ButtonPressed
     PushButton 85, 280, 65, 10, "SIR mail", SIR_mail_button
   CheckBox 175, 255, 85, 10, "Sent forms to AREP?", sent_arep_checkbox
+	CheckBox 300, 255, 105, 10, "Case has spenddown?", spenddown_check
   CheckBox 175, 270, 85, 10, "MMIS updated?", MMIS_updated_checkbox
-  EditBox 400, 250, 50, 15, worker_signature
+  EditBox 395, 285, 50, 15, worker_signature
   ButtonGroup ButtonPressed
-    OkButton 345, 270, 50, 15
-    CancelButton 400, 270, 50, 15
+    OkButton 345, 305, 50, 15
+    CancelButton 395, 305, 50, 15
     PushButton 10, 20, 25, 10, "BUSI", BUSI_button
     PushButton 35, 20, 25, 10, "JOBS", JOBS_button
     PushButton 10, 30, 25, 10, "RBIC", RBIC_button
@@ -106,8 +317,6 @@ BeginDialog HC_ER_dialog, 0, 0, 456, 300, "HC ER dialog"
     PushButton 400, 20, 45, 10, "prev. memb", prev_memb_button
     PushButton 340, 30, 45, 10, "next panel", next_panel_button
     PushButton 400, 30, 45, 10, "next memb", next_memb_button
-    PushButton 5, 135, 25, 10, "COEX/", COEX_button
-    PushButton 30, 135, 25, 10, "DCEX:", DCEX_button
   GroupBox 275, 5, 55, 30, "ELIG panels:"
   GroupBox 335, 5, 115, 40, "STAT-based navigation"
   Text 5, 55, 65, 10, "Recert datestamp:"
@@ -124,11 +333,13 @@ BeginDialog HC_ER_dialog, 0, 0, 456, 300, "HC ER dialog"
   GroupBox 5, 250, 150, 45, "If MA-EPD..."
   Text 10, 265, 50, 10, "New premium:"
   GroupBox 70, 5, 110, 40, "Asset panels"
-  Text 335, 255, 65, 10, "Worker signature:"
+  Text 330, 290, 65, 10, "Worker signature:"
   GroupBox 5, 5, 60, 40, "Income panels"
   GroupBox 185, 5, 85, 30, "other STAT panels:"
-  Text 165, 135, 100, 10, "Cost-effective insa availablity:"
+  Text 5, 135, 100, 10, "Cost-effective insa availablity:"
+
 EndDialog
+
 
 'VARIABLES WHICH NEED DECLARING------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 HH_memb_row = 5
@@ -186,6 +397,7 @@ recert_month = MAXIS_footer_month & "/" & MAXIS_footer_year
 
 'Showing case note dialog, with navigation and required answers logic
 DO
+	DO
 	Do
 		Do
 			err_msg = ""
@@ -200,8 +412,13 @@ DO
 		If worker_signature = "" then err_msg = err_msg & vbNewLine & "* Sign your case note."
 		IF err_msg <> "" THEN MsgBox "*** NOTICE!!! ***" & vbNewLine & err_msg & vbNewLine
 	LOOP until err_msg = ""
+	proceed_to_note = true 'set this here, as it will be needed if no errors found by function on next line'
+	call check_for_HC_errors(proceed_to_note)
+	LOOP until proceed_to_note = true
 	call check_for_password(are_we_passworded_out)  'Adding functionality for MAXIS v.6 Passworded Out issue'
+
 LOOP UNTIL are_we_passworded_out = false
+
 
 'The case note----------------------------------------------------------------------------------------------------
 call start_a_blank_case_note
