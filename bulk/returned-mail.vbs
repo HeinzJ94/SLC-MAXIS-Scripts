@@ -230,7 +230,7 @@ For each MAXIS_case_number in case_number_array
 			'Getting to DAIL/WRIT
 			call navigate_to_MAXIS_screen("dail", "writ")
 			'Inserting the date
-			call create_MAXIS_friendly_date(date, 10, 5, 18)
+			call create_MAXIS_friendly_date(date, 11, 5, 18)
 
 			'Writes TIKL depending on MailType
 			If MailType_array(array_count) = "No Forwarding " then
