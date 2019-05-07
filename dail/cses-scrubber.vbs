@@ -649,6 +649,7 @@ If SNAP_active = TRUE Then
 	EMWriteScreen approval_version, 18, 54
 	transmit
 	EMWriteScreen "FSB1", 19, 70
+	msgbox "transmit cometh"
 	transmit
 	EMReadScreen BUDG_JOBS,	8, 5 , 33
 	EMReadScreen BUDG_BUSI,	8, 6 , 33
