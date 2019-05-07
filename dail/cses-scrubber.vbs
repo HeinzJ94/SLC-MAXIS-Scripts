@@ -659,7 +659,7 @@ If SNAP_active = TRUE Then
 	EMReadScreen BUDG_UCWC, 8, 14, 33
 	EMReadScreen BUDG_CSES, 8, 15, 33
 	EMReadScreen BUDG_OTHR, 8, 16, 33
-
+	
 	If BUDG_JOBS = "        " Then BUDG_JOBS = 0
 	If BUDG_BUSI = "        " Then BUDG_BUSI = 0
 	If BUDG_PA   = "        " Then BUDG_PA   = 0
@@ -669,7 +669,7 @@ If SNAP_active = TRUE Then
 	If BUDG_UCWC = "        " Then BUDG_UCWC = 0
 	If BUDG_CSES = "        " Then BUDG_CSES = 0
 	If BUDG_OTHR = "        " Then BUDG_OTHR = 0
-
+	msgbox BUDG_JOBS
 	EMWriteScreen "FSB2", 19, 70
 	transmit
 
