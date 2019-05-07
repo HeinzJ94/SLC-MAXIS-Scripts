@@ -630,10 +630,7 @@ If SNAP_active = TRUE Then
 			call navigate_to_MAXIS_screen("DAIL", "DAIL")
 		END IF
 	END IF
-	EMWriteScreen "e", 6, 3
-	transmit
-	EMWriteScreen "fs", 20, 71
-	transmit
+	Call navigate_to_MAXIS_screen("ELIG", "FS")
 	EMWriteScreen "99", 19, 78
 	transmit
 	row = 17
