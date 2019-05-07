@@ -649,7 +649,7 @@ If SNAP_active = TRUE Then
 	EMWriteScreen approval_version, 18, 54
 	transmit
 	EMWriteScreen "FSB1", 19, 70
-	msgbox "transmit cometh"
+
 	transmit
 	EMReadScreen BUDG_JOBS,	8, 5 , 33
 	EMReadScreen BUDG_BUSI,	8, 6 , 33
@@ -670,7 +670,7 @@ If SNAP_active = TRUE Then
 	If BUDG_UCWC = "        " Then BUDG_UCWC = 0
 	If BUDG_CSES = "        " Then BUDG_CSES = 0
 	If BUDG_OTHR = "        " Then BUDG_OTHR = 0
-	msgbox BUDG_JOBS
+
 	EMWriteScreen "FSB2", 19, 70
 	transmit
 
