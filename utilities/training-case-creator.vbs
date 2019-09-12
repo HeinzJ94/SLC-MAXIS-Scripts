@@ -28,7 +28,7 @@ IF IsEmpty(FuncLib_URL) = TRUE THEN	'Shouldn't load FuncLib if it already loaded
             StopScript
 		END IF
 	ELSE
-		FuncLib_URL = "C:\BZS-FuncLib\MASTER FUNCTIONS LIBRARY.vbs"
+		FuncLib_URL = "C:\MAXIS-Scripts\MASTER FUNCTIONS LIBRARY.vbs"
 		Set run_another_script_fso = CreateObject("Scripting.FileSystemObject")
 		Set fso_command = run_another_script_fso.OpenTextFile(FuncLib_URL)
 		text_from_the_other_script = fso_command.ReadAll
@@ -44,6 +44,11 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("08/07/2019", "Updated coding to read Marital status, spouse reference number, last grade completed citizenship, citizenship verif, in MN more than 12 months and residence verif codes at new location due to MEMI panel changes associated with New Spouse Income Policy.", "Ilse Ferris, Hennepin County")
+call changelog_update("03/22/2019", "Added handling for FSET sanction reasons, updated input for sanction dates and updated dialog with current contact info.", "Ilse Ferris, Hennepin County")
+call changelog_update("10/2/2018", "Fixed bug with creating MEDI panel. Added functionality to add waiver or 1619 status to DISA.", "Casey Love, Hennepin County")
+call changelog_update("03/28/2018", "Added handling to send the HRF, and updated REI handling for MFIP cases.", "Ilse Ferris, Hennepin County")
+call changelog_update("03/06/2018", "Updated WF1M handling for MFIP cases that require a referral.", "Ilse Ferris, Hennepin County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
@@ -198,34 +203,25 @@ FUNCTION create_dialog(training_case_creator_excel_file_path, scenario_list, sce
 	Text 5, 100, 325, 20, "Please note: if you just wrote a scenario on the spreadsheet, it is recommended that you ''test'' it first by running a single case through. DHS staff cannot triage issues with agency-written scenarios."
 	EndDialog
 
-	DIALOG
+    Do
+	   DIALOG
+       CALL check_for_password(are_we_passworded_out)			'function that checks to ensure that the user has not passworded out of MAXIS, allows user to password back into MAXIS
+    Loop until are_we_passworded_out = false					'loops until user passwords back in
+
 END FUNCTION
 
-
 'DIALOGS------------------------------------------------------------------------------------------------------------------
-BeginDialog Dialog1, 0, 0, 381, 265, "Training case creator"
-  Text 10, 10, 170, 10, "Hello! Thanks for clicking the training case creator!"
-  Text 10, 25, 365, 20, "This script is very new, and was put together with a lot of hard work from seven scriptwriters, using bits and pieces from various scripts written over the last few years."
-  Text 10, 50, 365, 20, "We're very proud of the work we've done, but it's a very new concept, and there's bound to be issues here and there. Please keep this in mind as you use this exciting new tool!"
-  Text 10, 75, 365, 20, "If you run into any issues, or have any questions, please join the discussion on our GitHub page. One of the scriptwriters involved will be more than happy to assist you."
-  Text 10, 100, 350, 20, "NOTE: Due to system limitations MSA/SNAP cases may not have MSA budgeted into the SNAP budget for the initial month."
-  Text 10, 125, 90, 10, "Good luck and have fun!"
-  Text 20, 140, 90, 10, "- Veronica Cary, DHS"
-  Text 20, 150, 120, 10, "- Robert Fewins-Kalb, Anoka County"
-  Text 20, 160, 120, 10, "- Charles Potter, Anoka County"
-  Text 20, 170, 120, 10, "- Ilse Ferris, Hennepin County"
-  Text 20, 180, 120, 10, "- Casey Love, Ramsey County"
-  Text 20, 190, 120, 10, "- David Courtright, St. Louis County"
-  Text 20, 200, 120, 10, "- Lucas Shanley, St. Louis County"
-  Text 10, 220, 140, 10, "Select an Excel file for training scenarios:"
-  EditBox 150, 215, 175, 15, training_case_creator_excel_file_path
+BeginDialog Dialog1, 0, 0, 381, 125, "Training case creator"
+  Text 10, 10, 350, 20, "Hello! Thanks for clicking the training case creator! This script will create training cases in the training region for testing purposes. This script uses an Excel template with already built scenarions. "
+  Text 10, 35, 350, 20, "NOTE: Due to system limitations MSA/SNAP cases may not have MSA budgeted into the SNAP budget for the initial month."
+  Text 10, 60, 365, 10, "Good luck and have fun! Questions about this script can be sent to: HSPH.EWS.BlueZoneScripts@Hennepin.us"
+  Text 10, 80, 140, 10, "Select an Excel file for training scenarios:"
+  EditBox 150, 75, 175, 15, training_case_creator_excel_file_path
   ButtonGroup ButtonPressed
-    PushButton 330, 215, 45, 15, "Browse...", select_a_file_button
-    OkButton 270, 245, 50, 15
-    CancelButton 325, 245, 50, 15
+    PushButton 330, 75, 45, 15, "Browse...", select_a_file_button
+    OkButton 270, 105, 50, 15
+    CancelButton 325, 105, 50, 15
 EndDialog
-
-
 
 'VARIABLES TO DECLARE-----------------------------------------------------------------------
 how_many_cases_to_make = "1"		'Defaults to 1, but users can modify this.
@@ -234,10 +230,13 @@ how_many_cases_to_make = "1"		'Defaults to 1, but users can modify this.
 
 'Show initial dialog
 Do
-	Dialog
-	If ButtonPressed = cancel then stopscript
-	If ButtonPressed = select_a_file_button then call file_selection_system_dialog(training_case_creator_excel_file_path, ".xlsx")
-Loop until ButtonPressed = OK and training_case_creator_excel_file_path <> ""
+    Do
+    	Dialog
+    	If ButtonPressed = cancel then stopscript
+    	If ButtonPressed = select_a_file_button then call file_selection_system_dialog(training_case_creator_excel_file_path, ".xlsx")
+    Loop until ButtonPressed = OK and training_case_creator_excel_file_path <> ""
+    CALL check_for_password(are_we_passworded_out)			'function that checks to ensure that the user has not passworded out of MAXIS, allows user to password back into MAXIS
+Loop until are_we_passworded_out = false					'loops until user passwords back in
 
 'Opens Excel file here, as it needs to populate the dialog with the details from the spreadsheet.
 call excel_open(training_case_creator_excel_file_path, True, True, ObjExcel, objWorkbook)
@@ -249,45 +248,47 @@ Next
 
 'Connects to BlueZone
 EMConnect ""
+Do
+    DO
+    	DO
+    		DO
+    			CALL create_dialog(training_case_creator_excel_file_path, scenario_list, scenario_dropdown, approve_case_dropdown, how_many_cases_to_make, XFER_check, workers_to_XFER_cases_to, reload_excel_file_button, ButtonPressed)
+    				If buttonpressed = cancel then stopscript
+    				IF ButtonPressed = reload_excel_file_button THEN
+    					'Reseting the scenario list
+    					scenario_list = ""
+    					'Closing the current, active version of Excel
+    					objWorkbook.Close
+    					objExcel.Quit
 
-DO
-	DO
-		DO
-			CALL create_dialog(training_case_creator_excel_file_path, scenario_list, scenario_dropdown, approve_case_dropdown, how_many_cases_to_make, XFER_check, workers_to_XFER_cases_to, reload_excel_file_button, ButtonPressed)
-				If buttonpressed = cancel then stopscript
-				IF ButtonPressed = reload_excel_file_button THEN
-					'Reseting the scenario list
-					scenario_list = ""
-					'Closing the current, active version of Excel
-					objWorkbook.Close
-					objExcel.Quit
+    					'Opens Excel file here, as it needs to populate the dialog with the details from the spreadsheet.
+    					Set objExcel = CreateObject("Excel.Application") 'Allows a user to perform functions within Microsoft Excel
+    					objExcel.Visible = True
+    					Set objWorkbook = objExcel.Workbooks.Open(training_case_creator_excel_file_path) 'Opens an excel file from a specific URL
+    					objExcel.DisplayAlerts = True
 
-					'Opens Excel file here, as it needs to populate the dialog with the details from the spreadsheet.
-					Set objExcel = CreateObject("Excel.Application") 'Allows a user to perform functions within Microsoft Excel
-					objExcel.Visible = True
-					Set objWorkbook = objExcel.Workbooks.Open(training_case_creator_excel_file_path) 'Opens an excel file from a specific URL
-					objExcel.DisplayAlerts = True
-
-					'Set objWorkSheet = objWorkbook.Worksheet
-					For Each objWorkSheet In objWorkbook.Worksheets
-						If instr(objWorkSheet.Name, "Sheet") = 0 and objWorkSheet.Name <> "controls" then scenario_list = scenario_list & chr(9) & objWorkSheet.Name
-					Next
-				END IF
-		LOOP UNTIL ButtonPressed <> reload_excel_file_button
-		If scenario_dropdown = "select one..." AND ButtonPressed = -1 then MsgBox ("You must select a scenario from the dropdown!")
-	LOOP UNTIL ButtonPressed <> reload_excel_file_button
-	final_check_before_running = MsgBox("Here's what the scenario will try to create. Please review before proceeding:" & Chr(10) & Chr(10) & _
-									"Scenario selection: " & scenario_dropdown & Chr(10) & _
-									"Approving cases: " & approve_case_dropdown & Chr(10) & _
-									"Amt of cases to make: " & how_many_cases_to_make & Chr(10) & _
-									"Workers to XFER cases to: " & workers_to_XFER_cases_to & Chr(10) & Chr(10) & _
-									"It is VERY IMPORTANT to review these details before proceeding. It is also highly recommended that if you've created your own scenarios, " & _
-									"test them first creating a single case. This is to check to see if any details were missed on the spreadsheet. DHS CANNOT TRIAGE ISSUES WITH " & _
-									"COUNTY/AGENCY CUSTOMIZED SCENARIOS." & Chr(10) & Chr(10) & _
-									"Please also note that creating training cases can take a very long time. If you are creating hundreds of cases, you may want to run this " & _
-									"overnight, or on a secondary machine." & Chr(10) & Chr(10) & _
-									"If you are ready to continue, press ''Yes''. Otherwise, press ''no'' to return to the previous screen.", vbYesNo)
-LOOP UNTIL final_check_before_running = vbYes
+    					'Set objWorkSheet = objWorkbook.Worksheet
+    					For Each objWorkSheet In objWorkbook.Worksheets
+    						If instr(objWorkSheet.Name, "Sheet") = 0 and objWorkSheet.Name <> "controls" then scenario_list = scenario_list & chr(9) & objWorkSheet.Name
+    					Next
+    				END IF
+    		LOOP UNTIL ButtonPressed <> reload_excel_file_button
+    		If scenario_dropdown = "select one..." AND ButtonPressed = -1 then MsgBox ("You must select a scenario from the dropdown!")
+    	LOOP UNTIL ButtonPressed <> reload_excel_file_button
+    	final_check_before_running = MsgBox("Here's what the scenario will try to create. Please review before proceeding:" & Chr(10) & Chr(10) & _
+    									"Scenario selection: " & scenario_dropdown & Chr(10) & _
+    									"Approving cases: " & approve_case_dropdown & Chr(10) & _
+    									"Amt of cases to make: " & how_many_cases_to_make & Chr(10) & _
+    									"Workers to XFER cases to: " & workers_to_XFER_cases_to & Chr(10) & Chr(10) & _
+    									"It is VERY IMPORTANT to review these details before proceeding. It is also highly recommended that if you've created your own scenarios, " & _
+    									"test them first creating a single case. This is to check to see if any details were missed on the spreadsheet. DHS CANNOT TRIAGE ISSUES WITH " & _
+    									"COUNTY/AGENCY CUSTOMIZED SCENARIOS." & Chr(10) & Chr(10) & _
+    									"Please also note that creating training cases can take a very long time. If you are creating hundreds of cases, you may want to run this " & _
+    									"overnight, or on a secondary machine." & Chr(10) & Chr(10) & _
+    									"If you are ready to continue, press ''Yes''. Otherwise, press ''no'' to return to the previous screen.", vbYesNo)
+    LOOP UNTIL final_check_before_running = vbYes
+    CALL check_for_password(are_we_passworded_out)			'function that checks to ensure that the user has not passworded out of MAXIS, allows user to password back into MAXIS
+Loop until are_we_passworded_out = false					'loops until user passwords back in
 
 'Activates worksheet based on user selection
 objExcel.worksheets(scenario_dropdown).Activate
@@ -489,20 +490,17 @@ For cases_to_make = 1 to how_many_cases_to_make
 		Blank_IMIG = ""		'Blanking out for the next client
 
 		'Updates MEMI with the info
-		EMWriteScreen MEMI_marital_status, 7, 49
-		EMWriteScreen MEMI_spouse, 8, 49
-		EMWriteScreen MEMI_last_grade_completed, 9, 49
-		EMWriteScreen MEMI_cit_yn, 10, 49
-		EMWriteScreen "NO", 10, 78		'Always defaulting to none for cit/ID proof right now
-		EMWriteScreen "Y", 13, 49		'Always defualting to yes for been in MN > 12 months
-		EMWriteScreen "N", 13, 78		'Always defualting to no for residence verification
+		EMWriteScreen MEMI_marital_status, 7, 40
+		EMWriteScreen MEMI_spouse, 9, 49
+		EMWriteScreen MEMI_last_grade_completed, 10, 49
+		EMWriteScreen MEMI_cit_yn, 11, 49
+		EMWriteScreen "NO", 11, 78		'Always defaulting to none for cit/ID proof right now
+		EMWriteScreen "Y", 14, 49		'Always defualting to yes for been in MN > 12 months
+		EMWriteScreen "N", 14, 78		'Always defualting to no for residence verification
 		transmit
-
-
 	Next
-
-	'This next transmit gets to the ADDR screen
-	transmit
+    
+	transmit 'This next transmit gets to the ADDR screen
 
 	'Gets ADDR info from spreadsheet, gets from column 3 because it's case based
 	ADDR_starting_excel_row = 23
@@ -985,29 +983,44 @@ For each MAXIS_case_number in case_number_array
 		DISA_snap_status_ver = left(ObjExcel.Cells(DISA_starting_excel_row + 11, current_excel_col).Value, 1)
 		DISA_hc_status = left(ObjExcel.Cells(DISA_starting_excel_row + 12, current_excel_col).Value, 2)
 		DISA_hc_status_ver = left(ObjExcel.Cells(DISA_starting_excel_row + 13, current_excel_col).Value, 1)
-		DISA_waiver = left(ObjExcel.Cells(DISA_starting_excel_row + 14, current_excel_col).Value, 1)
-		DISA_drug_alcohol = ObjExcel.Cells(DISA_starting_excel_row + 15, current_excel_col).Value
+        'This is variable because we have added a row to the template but some scenarios will not have this row added yet.
+        for add_row = 14 to 16
+            If trim(ObjExcel.Cells(DISA_starting_excel_row + add_row, 2).Value) = "home/community based waiver" Then
+                DISA_waiver = left(ObjExcel.Cells(DISA_starting_excel_row + add_row, current_excel_col).Value, 1)
+            ElseIf trim(ObjExcel.Cells(DISA_starting_excel_row + add_row, 2).Value) = "1619 status" Then
+                DISA_1619 = left(ObjExcel.Cells(DISA_starting_excel_row + add_row, current_excel_col).Value, 1)
+            ElseIf trim(ObjExcel.Cells(DISA_starting_excel_row + add_row, 2).Value) = "drug/alcoholism ver code" Then
+                DISA_drug_alcohol = left(ObjExcel.Cells(DISA_starting_excel_row + add_row, current_excel_col).Value, 1)
+            End If
 
-		DSTT_starting_excel_row = 277
+            If trim(ObjExcel.Cells(DISA_starting_excel_row + add_row, 2).Value) = "drug/alcoholism ver code" Then
+                starting_row = DISA_starting_excel_row + add_row + 1
+            End If
+        next
+
+		DSTT_starting_excel_row = starting_row        '277
 		DSTT_ongoing_income = ObjExcel.Cells(DSTT_starting_excel_row, current_excel_col).Value
 		DSTT_HH_income_stop_date = ObjExcel.Cells(DSTT_starting_excel_row + 1, current_excel_col).Value
 		DSTT_income_expected_amt = ObjExcel.Cells(DSTT_starting_excel_row + 2, current_excel_col).Value
+        starting_row = starting_row + 3
 
-		EATS_starting_excel_row = 280
+		EATS_starting_excel_row = starting_row        '280
 		EATS_together = ObjExcel.Cells(EATS_starting_excel_row, current_excel_col).Value
 		EATS_boarder = ObjExcel.Cells(EATS_starting_excel_row + 1, current_excel_col).Value
 		EATS_group_one = ObjExcel.Cells(EATS_starting_excel_row + 2, current_excel_col).Value
 		EATS_group_two = ObjExcel.Cells(EATS_starting_excel_row + 3, current_excel_col).Value
 		EATS_group_three = ObjExcel.Cells(EATS_starting_excel_row + 4, current_excel_col).Value
+        starting_row = starting_row + 5
 
-		EMMA_starting_excel_row = 285
+		EMMA_starting_excel_row = starting_row        '285
 		EMMA_medical_emergency = left(ObjExcel.Cells(EMMA_starting_excel_row, current_excel_col).Value, 2)
 		EMMA_health_consequence = left(ObjExcel.Cells(EMMA_starting_excel_row + 1, current_excel_col).Value, 2)
 		EMMA_verification = left(ObjExcel.Cells(EMMA_starting_excel_row + 2, current_excel_col).Value, 2)
 		EMMA_begin_date = ObjExcel.Cells(EMMA_starting_excel_row + 3, current_excel_col).Value
 		EMMA_end_date = ObjExcel.Cells(EMMA_starting_excel_row + 4, current_excel_col).Value
+        starting_row = starting_row + 5
 
-		EMPS_starting_excel_row = 290
+		EMPS_starting_excel_row = starting_row        '290
 		EMPS_orientation_date = ObjExcel.Cells(EMPS_starting_excel_row, current_excel_col).Value
 		EMPS_orientation_attended = ObjExcel.Cells(EMPS_starting_excel_row + 1, current_excel_col).Value
 		EMPS_good_cause = left(ObjExcel.Cells(EMPS_starting_excel_row + 2, current_excel_col).Value, 2)
@@ -1019,8 +1032,9 @@ For each MAXIS_case_number in case_number_array
 		EMPS_hard_employ = left(ObjExcel.Cells(EMPS_starting_excel_row + 8, current_excel_col).Value, 2)
 		EMPS_under1 = ObjExcel.Cells(EMPS_starting_excel_row + 9, current_excel_col).Value
 		EMPS_DWP_date = ObjExcel.Cells(EMPS_starting_excel_row + 10, current_excel_col).Value
+        starting_row = starting_row + 11
 
-		FACI_starting_excel_row = 301
+		FACI_starting_excel_row = starting_row        '301
 		FACI_vendor_number = ObjExcel.Cells(FACI_starting_excel_row, current_excel_col).Value
 		FACI_name = ObjExcel.Cells(FACI_starting_excel_row + 1, current_excel_col).Value
 		FACI_type = left(ObjExcel.Cells(FACI_starting_excel_row + 2, current_excel_col).Value, 2)
@@ -1028,8 +1042,9 @@ For each MAXIS_case_number in case_number_array
 		FACI_FS_facility_type = left(ObjExcel.Cells(FACI_starting_excel_row + 4, current_excel_col).Value, 1)
 		FACI_date_in = ObjExcel.Cells(FACI_starting_excel_row + 5, current_excel_col).Value
 		FACI_date_out = ObjExcel.Cells(FACI_starting_excel_row + 6, current_excel_col).Value
+        starting_row = starting_row + 7
 
-		FMED_starting_excel_row = 308
+		FMED_starting_excel_row = starting_row        '308
 		FMED_medical_mileage = objExcel.Cells(FMED_starting_excel_row, current_excel_col).Value
 		FMED_1_type = left(objExcel.Cells(FMED_starting_excel_row + 1, current_excel_col).Value, 2)
 		FMED_1_verif = left(objExcel.Cells(FMED_starting_excel_row + 2, current_excel_col).Value, 2)
@@ -1059,8 +1074,9 @@ For each MAXIS_case_number in case_number_array
 		FMED_4_begin = objExcel.Cells(FMED_starting_excel_row + 26, current_excel_col).Value
 		FMED_4_end = objExcel.Cells(FMED_starting_excel_row + 27, current_excel_col).Value
 		FMED_4_amount = objExcel.Cells(FMED_starting_excel_row + 28, current_excel_col).Value
+        starting_row = starting_row + 29
 
-		HEST_starting_excel_row = 337
+		HEST_starting_excel_row = starting_row        '337
 		HEST_FS_choice_date = ObjExcel.Cells(HEST_starting_excel_row, current_excel_col).Value
 		HEST_first_month = ObjExcel.Cells(HEST_starting_excel_row + 1, current_excel_col).Value
 		HEST_heat_air_retro = ObjExcel.Cells(HEST_starting_excel_row + 2, current_excel_col).Value
@@ -1069,8 +1085,9 @@ For each MAXIS_case_number in case_number_array
 		HEST_electric_pro = ObjExcel.Cells(HEST_starting_excel_row + 5, current_excel_col).Value
 		HEST_phone_retro = ObjExcel.Cells(HEST_starting_excel_row + 6, current_excel_col).Value
 		HEST_phone_pro = ObjExcel.Cells(HEST_starting_excel_row + 7, current_excel_col).Value
+        starting_row = starting_row + 8
 
-		IMIG_starting_excel_row = 345
+		IMIG_starting_excel_row = starting_row        '345
 		IMIG_imigration_status = left(ObjExcel.Cells(IMIG_starting_excel_row, current_excel_col).Value, 2)
 		IMIG_entry_date = ObjExcel.Cells(IMIG_starting_excel_row + 1, current_excel_col).Value
 		IMIG_status_date = ObjExcel.Cells(IMIG_starting_excel_row + 2, current_excel_col).Value
@@ -1087,8 +1104,9 @@ For each MAXIS_case_number in case_number_array
 		IMIG_st_prog_esl_ctzn_coop = ObjExcel.Cells(IMIG_starting_excel_row + 13, current_excel_col).Value
 		IMIG_st_prog_esl_ctzn_coop_verif = ObjExcel.Cells(IMIG_starting_excel_row + 14, current_excel_col).Value
 		IMIG_fss_esl_skills_training = ObjExcel.Cells(IMIG_starting_excel_row + 15, current_excel_col).Value
+        starting_row = starting_row + 16
 
-		INSA_starting_excel_row = 361
+		INSA_starting_excel_row = starting_row        '361
 		INSA_pers_coop_ohi = ObjExcel.Cells(INSA_starting_excel_row, current_excel_col).Value
 		INSA_good_cause_status = left(ObjExcel.Cells(INSA_starting_excel_row + 1, current_excel_col).Value, 1)
 		INSA_good_cause_cliam_date = ObjExcel.Cells(INSA_starting_excel_row + 2, current_excel_col).Value
@@ -1098,8 +1116,9 @@ For each MAXIS_case_number in case_number_array
 		INSA_prescrip_drug_cover = ObjExcel.Cells(INSA_starting_excel_row + 6, current_excel_col).Value
 		INSA_prescrip_end_date = ObjExcel.Cells(INSA_starting_excel_row + 7, current_excel_col).Value
 		INSA_persons_covered = ObjExcel.Cells(INSA_starting_excel_row + 8, current_excel_col).Value
+        starting_row = starting_row + 9
 
-		JOBS_1_starting_excel_row = 370
+		JOBS_1_starting_excel_row = starting_row      '370
 		JOBS_1_inc_type = left(ObjExcel.Cells(JOBS_1_starting_excel_row, current_excel_col).Value, 1)
 		JOBS_1_inc_verif = left(ObjExcel.Cells(JOBS_1_starting_excel_row + 1, current_excel_col).Value, 1)
 		JOBS_1_employer_name = ObjExcel.Cells(JOBS_1_starting_excel_row + 2, current_excel_col).Value
@@ -1107,8 +1126,9 @@ For each MAXIS_case_number in case_number_array
 		JOBS_1_pay_freq = ObjExcel.Cells(JOBS_1_starting_excel_row + 4, current_excel_col).Value
 		JOBS_1_wkly_hrs = ObjExcel.Cells(JOBS_1_starting_excel_row + 5, current_excel_col).Value
 		JOBS_1_hrly_wage = ObjExcel.Cells(JOBS_1_starting_excel_row + 6, current_excel_col).Value
+        starting_row = starting_row + 7
 
-		JOBS_2_starting_excel_row = 377
+		JOBS_2_starting_excel_row = starting_row      '377
 		JOBS_2_inc_type = left(ObjExcel.Cells(JOBS_2_starting_excel_row, current_excel_col).Value, 1)
 		JOBS_2_inc_verif = left(ObjExcel.Cells(JOBS_2_starting_excel_row + 1, current_excel_col).Value, 1)
 		JOBS_2_employer_name = ObjExcel.Cells(JOBS_2_starting_excel_row + 2, current_excel_col).Value
@@ -1116,8 +1136,9 @@ For each MAXIS_case_number in case_number_array
 		JOBS_2_pay_freq = ObjExcel.Cells(JOBS_2_starting_excel_row + 4, current_excel_col).Value
 		JOBS_2_wkly_hrs = ObjExcel.Cells(JOBS_2_starting_excel_row + 5, current_excel_col).Value
 		JOBS_2_hrly_wage = ObjExcel.Cells(JOBS_2_starting_excel_row + 6, current_excel_col).Value
+        starting_row = starting_row + 7
 
-		JOBS_3_starting_excel_row = 384
+		JOBS_3_starting_excel_row = starting_row      '384
 		JOBS_3_inc_type = left(ObjExcel.Cells(JOBS_3_starting_excel_row, current_excel_col).Value, 1)
 		JOBS_3_inc_verif = left(ObjExcel.Cells(JOBS_3_starting_excel_row + 1, current_excel_col).Value, 1)
 		JOBS_3_employer_name = ObjExcel.Cells(JOBS_3_starting_excel_row + 2, current_excel_col).Value
@@ -1125,8 +1146,9 @@ For each MAXIS_case_number in case_number_array
 		JOBS_3_pay_freq = ObjExcel.Cells(JOBS_3_starting_excel_row + 4, current_excel_col).Value
 		JOBS_3_wkly_hrs = ObjExcel.Cells(JOBS_3_starting_excel_row + 5, current_excel_col).Value
 		JOBS_3_hrly_wage = ObjExcel.Cells(JOBS_3_starting_excel_row + 6, current_excel_col).Value
+        starting_row = starting_row + 7
 
-		MEDI_starting_excel_row = 391
+		MEDI_starting_excel_row = starting_row        '391
 		MEDI_claim_number_suffix = ObjExcel.Cells(MEDI_starting_excel_row, current_excel_col).Value
 		MEDI_part_A_premium = ObjExcel.Cells(MEDI_starting_excel_row + 1, current_excel_col).Value
 		MEDI_part_B_premium = ObjExcel.Cells(MEDI_starting_excel_row + 2, current_excel_col).Value
@@ -1134,17 +1156,20 @@ For each MAXIS_case_number in case_number_array
 		MEDI_part_B_begin_date = ObjExcel.Cells(MEDI_starting_excel_row + 4, current_excel_col).Value
 		MEDI_apply_prem_to_spdn = ObjExcel.Cells(MEDI_starting_excel_row + 5, current_excel_col).Value
 		MEDI_apply_prem_end_date = ObjExcel.Cells(MEDI_starting_excel_row + 6, current_excel_col).Value
+        starting_row = starting_row + 7
 
-		MMSA_starting_excel_row = 398
+		MMSA_starting_excel_row = starting_row        '398
 		MMSA_liv_arr = left(ObjExcel.Cells(MMSA_starting_excel_row, current_excel_col).Value, 1)
 		MMSA_cont_elig = ObjExcel.Cells(MMSA_starting_excel_row + 1, current_excel_col).Value
 		MMSA_spous_inc = ObjExcel.Cells(MMSA_starting_excel_row + 2, current_excel_col).Value
 		MMSA_shared_hous = ObjExcel.Cells(MMSA_starting_excel_row + 3, current_excel_col).Value
+        starting_row = starting_row + 4
 
-		MSUR_starting_excel_row = 402
+		MSUR_starting_excel_row = starting_row        '402
 		MSUR_begin_date = ObjExcel.Cells(MSUR_starting_excel_row, current_excel_col).Value
+        starting_row = starting_row + 1
 
-		OTHR_starting_excel_row = 403
+		OTHR_starting_excel_row = starting_row        '403
 		OTHR_type = left(ObjExcel.Cells(OTHR_starting_excel_row, current_excel_col).Value, 1)
 		OTHR_cash_value = ObjExcel.Cells(OTHR_starting_excel_row + 1, current_excel_col).Value
 		OTHR_cash_value_ver = left(ObjExcel.Cells(OTHR_starting_excel_row + 2, current_excel_col).Value, 1)
@@ -1157,8 +1182,9 @@ For each MAXIS_case_number in case_number_array
 		OTHR_IV_count = ObjExcel.Cells(OTHR_starting_excel_row + 9, current_excel_col).Value
 		OTHR_joint = ObjExcel.Cells(OTHR_starting_excel_row + 10, current_excel_col).Value
 		OTHR_share_ratio = ObjExcel.Cells(OTHR_starting_excel_row + 11, current_excel_col).Value
+        starting_row = starting_row + 12
 
-		PARE_starting_excel_row = 415
+		PARE_starting_excel_row = starting_row        '415
 		PARE_child_1 = ObjExcel.Cells(PARE_starting_excel_row, current_excel_col).Value
 		PARE_child_1_relation = left(ObjExcel.Cells(PARE_starting_excel_row + 1, current_excel_col).Value, 1)
 		PARE_child_1_verif = left(ObjExcel.Cells(PARE_starting_excel_row + 2, current_excel_col).Value, 2)
@@ -1177,32 +1203,36 @@ For each MAXIS_case_number in case_number_array
 		PARE_child_6 = ObjExcel.Cells(PARE_starting_excel_row + 15, current_excel_col).Value
 		PARE_child_6_relation = left(ObjExcel.Cells(PARE_starting_excel_row + 16, current_excel_col).Value, 1)
 		PARE_child_6_verif = left(ObjExcel.Cells(PARE_starting_excel_row + 17, current_excel_col).Value, 2)
+        starting_row = starting_row + 18
 
-		PBEN_1_starting_excel_row = 433
+		PBEN_1_starting_excel_row = starting_row      '433
 		PBEN_1_referal_date = ObjExcel.Cells(PBEN_1_starting_excel_row, current_excel_col).Value
 		PBEN_1_type = left(ObjExcel.Cells(PBEN_1_starting_excel_row + 1, current_excel_col).Value, 2)
 		PBEN_1_appl_date = ObjExcel.Cells(PBEN_1_starting_excel_row + 2, current_excel_col).Value
 		PBEN_1_appl_ver = left(ObjExcel.Cells(PBEN_1_starting_excel_row + 3, current_excel_col).Value, 1)
 		PBEN_1_IAA_date = ObjExcel.Cells(PBEN_1_starting_excel_row + 4, current_excel_col).Value
 		PBEN_1_disp = left(ObjExcel.Cells(PBEN_1_starting_excel_row + 5, current_excel_col).Value, 1)
+        starting_row = starting_row + 6
 
-		PBEN_2_starting_excel_row = 439
+		PBEN_2_starting_excel_row = starting_row      '439
 		PBEN_2_referal_date = ObjExcel.Cells(PBEN_2_starting_excel_row, current_excel_col).Value
 		PBEN_2_type = left(ObjExcel.Cells(PBEN_2_starting_excel_row + 1, current_excel_col).Value, 2)
 		PBEN_2_appl_date = ObjExcel.Cells(PBEN_2_starting_excel_row + 2, current_excel_col).Value
 		PBEN_2_appl_ver = left(ObjExcel.Cells(PBEN_2_starting_excel_row + 3, current_excel_col).Value, 1)
 		PBEN_2_IAA_date = ObjExcel.Cells(PBEN_2_starting_excel_row + 4, current_excel_col).Value
 		PBEN_2_disp = left(ObjExcel.Cells(PBEN_2_starting_excel_row + 5, current_excel_col).Value, 1)
+        starting_row = starting_row + 6
 
-		PBEN_3_starting_excel_row = 445
+		PBEN_3_starting_excel_row = starting_row      '445
 		PBEN_3_referal_date = ObjExcel.Cells(PBEN_3_starting_excel_row, current_excel_col).Value
 		PBEN_3_type = left(ObjExcel.Cells(PBEN_3_starting_excel_row + 1, current_excel_col).Value, 2)
 		PBEN_3_appl_date = ObjExcel.Cells(PBEN_3_starting_excel_row + 2, current_excel_col).Value
 		PBEN_3_appl_ver = left(ObjExcel.Cells(PBEN_3_starting_excel_row + 3, current_excel_col).Value, 1)
 		PBEN_3_IAA_date = ObjExcel.Cells(PBEN_3_starting_excel_row + 4, current_excel_col).Value
 		PBEN_3_disp = left(ObjExcel.Cells(PBEN_3_starting_excel_row + 5, current_excel_col).Value, 1)
+        starting_row = starting_row + 6
 
-		PDED_starting_excel_row = 451
+		PDED_starting_excel_row = starting_row        '451
 		PDED_wid_deduction = ObjExcel.Cells(PDED_starting_excel_row, current_excel_col).Value
 		PDED_adult_child_disregard = ObjExcel.Cells(PDED_starting_excel_row + 1, current_excel_col).Value
 		PDED_wid_disregard = ObjExcel.Cells(PDED_starting_excel_row + 2, current_excel_col).Value
@@ -1217,15 +1247,17 @@ For each MAXIS_case_number in case_number_array
 		PDED_shel_spcl_needs = ObjExcel.Cells(PDED_starting_excel_row + 11, current_excel_col).Value
 		PDED_excess_need = ObjExcel.Cells(PDED_starting_excel_row + 12, current_excel_col).Value
 		PDED_restaurant_meals = ObjExcel.Cells(PDED_starting_excel_row + 13, current_excel_col).Value
+        starting_row = starting_row + 14
 
-		PREG_starting_excel_row = 465
+		PREG_starting_excel_row = starting_row        '465
 		PREG_conception_date = ObjExcel.Cells(PREG_starting_excel_row, current_excel_col).Value
 		PREG_conception_date_ver = ObjExcel.Cells(PREG_starting_excel_row + 1, current_excel_col).Value
 		PREG_third_trimester_ver = ObjExcel.Cells(PREG_starting_excel_row + 2, current_excel_col).Value
 		PREG_due_date = ObjExcel.Cells(PREG_starting_excel_row + 3, current_excel_col).Value
 		PREG_multiple_birth = ObjExcel.Cells(PREG_starting_excel_row + 4, current_excel_col).Value
+        starting_row = starting_row + 5
 
-		RBIC_starting_excel_row = 470
+		RBIC_starting_excel_row = starting_row        '470
 		RBIC_type = left(ObjExcel.Cells(RBIC_starting_excel_row, current_excel_col).Value, 2)
 		RBIC_start_date = ObjExcel.Cells(RBIC_starting_excel_row + 1, current_excel_col).Value
 		RBIC_end_date = ObjExcel.Cells(RBIC_starting_excel_row + 2, current_excel_col).Value
@@ -1251,8 +1283,9 @@ For each MAXIS_case_number in case_number_array
 		RBIC_exp_retro_2 = ObjExcel.Cells(RBIC_starting_excel_row + 22, current_excel_col).Value
 		RBIC_exp_prosp_2 = ObjExcel.Cells(RBIC_starting_excel_row + 23, current_excel_col).Value
 		RBIC_exp_ver_2 = left(ObjExcel.Cells(RBIC_starting_excel_row + 24, current_excel_col).Value, 1)
+        starting_row = starting_row + 25
 
-		REST_starting_excel_row = 495
+		REST_starting_excel_row = starting_row        '495
 		REST_type = left(ObjExcel.Cells(REST_starting_excel_row, current_excel_col).Value, 1)
 		REST_type_ver = left(ObjExcel.Cells(REST_starting_excel_row + 1, current_excel_col).Value, 2)
 		REST_market = ObjExcel.Cells(REST_starting_excel_row + 2, current_excel_col).Value
@@ -1264,8 +1297,9 @@ For each MAXIS_case_number in case_number_array
 		REST_joint = ObjExcel.Cells(REST_starting_excel_row + 8, current_excel_col).Value
 		REST_share_ratio = ObjExcel.Cells(REST_starting_excel_row + 9, current_excel_col).Value
 		REST_agreement_date = ObjExcel.Cells(REST_starting_excel_row + 10, current_excel_col).Value
+        starting_row = starting_row + 11
 
-		SCHL_starting_excel_row = 506
+		SCHL_starting_excel_row = starting_row        '506
 		SCHL_status = left(ObjExcel.Cells(SCHL_starting_excel_row, current_excel_col).Value, 1)
 		SCHL_ver = left(ObjExcel.Cells(SCHL_starting_excel_row + 1, current_excel_col).Value, 2)
 		SCHL_type = left(ObjExcel.Cells(SCHL_starting_excel_row + 2, current_excel_col).Value, 2)
@@ -1276,8 +1310,9 @@ For each MAXIS_case_number in case_number_array
 		SCHL_primary_secondary_funding = left(ObjExcel.Cells(SCHL_starting_excel_row + 7, current_excel_col).Value, 1)
 		SCHL_FS_eligibility_status = left(ObjExcel.Cells(SCHL_starting_excel_row + 8, current_excel_col).Value, 2)
 		SCHL_higher_ed = ObjExcel.Cells(SCHL_starting_excel_row + 9, current_excel_col).Value
+        starting_row = starting_row + 10
 
-		SECU_starting_excel_row = 516
+		SECU_starting_excel_row = starting_row        '516
 		SECU_type = left(ObjExcel.Cells(SECU_starting_excel_row, current_excel_col).Value, 2)
 		SECU_pol_numb = ObjExcel.Cells(SECU_starting_excel_row + 1, current_excel_col).Value
 		SECU_name = ObjExcel.Cells(SECU_starting_excel_row + 2, current_excel_col).Value
@@ -1293,8 +1328,9 @@ For each MAXIS_case_number in case_number_array
 		SECU_IV_count = ObjExcel.Cells(SECU_starting_excel_row + 12, current_excel_col).Value
 		SECU_joint = ObjExcel.Cells(SECU_starting_excel_row + 13, current_excel_col).Value
 		SECU_share_ratio = ObjExcel.Cells(SECU_starting_excel_row + 14, current_excel_col).Value
+        starting_row = starting_row + 15
 
-		SHEL_starting_excel_row = 531
+		SHEL_starting_excel_row = starting_row        '531
 		SHEL_subsidized = ObjExcel.Cells(SHEL_starting_excel_row, current_excel_col).Value
 		SHEL_shared = ObjExcel.Cells(SHEL_starting_excel_row + 1, current_excel_col).Value
 		SHEL_paid_to = ObjExcel.Cells(SHEL_starting_excel_row + 2, current_excel_col).Value
@@ -1330,19 +1366,22 @@ For each MAXIS_case_number in case_number_array
 		SHEL_subsidy_retro_ver = left(ObjExcel.Cells(SHEL_starting_excel_row + 32, current_excel_col).Value, 2)
 		SHEL_subsidy_pro = ObjExcel.Cells(SHEL_starting_excel_row + 33, current_excel_col).Value
 		SHEL_subsidy_pro_ver = left(ObjExcel.Cells(SHEL_starting_excel_row + 34, current_excel_col).Value, 2)
+        starting_row = starting_row + 35
 
-		SIBL_starting_excel_row = 566
+		SIBL_starting_excel_row = starting_row        '566
 		SIBL_group_1 = ObjExcel.Cells(SIBL_starting_excel_row, current_excel_col).Value
 		SIBL_group_2 = ObjExcel.Cells(SIBL_starting_excel_row + 1, current_excel_col).Value
 		SIBL_group_3 = ObjExcel.Cells(SIBL_starting_excel_row + 2, current_excel_col).Value
+        starting_row = starting_row + 3
 
-		SPON_starting_excel_row = 569
+		SPON_starting_excel_row = starting_row        '569
 		SPON_type = left(ObjExcel.Cells(SPON_starting_excel_row, current_excel_col).Value, 2)
 		SPON_ver = ObjExcel.Cells(SPON_starting_excel_row + 1, current_excel_col).Value
 		SPON_name = ObjExcel.Cells(SPON_starting_excel_row + 2, current_excel_col).Value
 		SPON_state = ObjExcel.Cells(SPON_starting_excel_row + 3, current_excel_col).Value
+        starting_row = starting_row + 4
 
-		STEC_starting_excel_row = 573
+		STEC_starting_excel_row = starting_row        '573
 		STEC_type_1 = left(ObjExcel.Cells(STEC_starting_excel_row, current_excel_col).Value, 2)
 		STEC_amt_1 = ObjExcel.Cells(STEC_starting_excel_row + 1, current_excel_col).Value
 		STEC_actual_from_thru_months_1 = ObjExcel.Cells(STEC_starting_excel_row + 2, current_excel_col).Value
@@ -1355,8 +1394,9 @@ For each MAXIS_case_number in case_number_array
 		STEC_ver_2 = left(ObjExcel.Cells(STEC_starting_excel_row + 9, current_excel_col).Value, 1)
 		STEC_earmarked_amt_2 = ObjExcel.Cells(STEC_starting_excel_row + 10, current_excel_col).Value
 		STEC_earmarked_from_thru_months_2 = ObjExcel.Cells(STEC_starting_excel_row + 11, current_excel_col).Value
+        starting_row = starting_row + 12
 
-		STIN_starting_excel_row = 585
+		STIN_starting_excel_row = starting_row        '585
 		STIN_type_1 = left(ObjExcel.Cells(STIN_starting_excel_row, current_excel_col).Value, 2)
 		STIN_amt_1 = ObjExcel.Cells(STIN_starting_excel_row + 1, current_excel_col).Value
 		STIN_avail_date_1 = ObjExcel.Cells(STIN_starting_excel_row + 2, current_excel_col).Value
@@ -1367,8 +1407,9 @@ For each MAXIS_case_number in case_number_array
 		STIN_avail_date_2 = ObjExcel.Cells(STIN_starting_excel_row + 7, current_excel_col).Value
 		STIN_months_covered_2 = ObjExcel.Cells(STIN_starting_excel_row + 8, current_excel_col).Value
 		STIN_ver_2 = left(ObjExcel.Cells(STIN_starting_excel_row + 9, current_excel_col).Value, 1)
+        starting_row = starting_row + 10
 
-		STWK_starting_excel_row = 595
+		STWK_starting_excel_row = starting_row        '595
 		STWK_empl_name = ObjExcel.Cells(STWK_starting_excel_row, current_excel_col).Value
 		STWK_wrk_stop_date = ObjExcel.Cells(STWK_starting_excel_row + 1, current_excel_col).Value
 		STWK_wrk_stop_date_verif = left(ObjExcel.Cells(STWK_starting_excel_row + 2, current_excel_col).Value, 1)
@@ -1381,32 +1422,36 @@ For each MAXIS_case_number in case_number_array
 		STWK_gc_fs = ObjExcel.Cells(STWK_starting_excel_row + 9, current_excel_col).Value
 		STWK_fs_pwe = ObjExcel.Cells(STWK_starting_excel_row + 10, current_excel_col).Value
 		STWK_maepd_ext = left(ObjExcel.Cells(STWK_starting_excel_row + 11, current_excel_col).Value, 1)
+        starting_row = starting_row + 12
 
-		UNEA_1_starting_excel_row = 607
+		UNEA_1_starting_excel_row = starting_row      '607
 		UNEA_1_inc_type = left(ObjExcel.Cells(UNEA_1_starting_excel_row, current_excel_col).Value, 2)
 		UNEA_1_inc_verif = left(ObjExcel.Cells(UNEA_1_starting_excel_row + 1, current_excel_col).Value, 1)
 		UNEA_1_claim_suffix = ObjExcel.Cells(UNEA_1_starting_excel_row + 2, current_excel_col).Value
 		UNEA_1_start_date = ObjExcel.Cells(UNEA_1_starting_excel_row + 3, current_excel_col).Value
 		UNEA_1_pay_freq = ObjExcel.Cells(UNEA_1_starting_excel_row + 4, current_excel_col).Value
 		UNEA_1_inc_amount = ObjExcel.Cells(UNEA_1_starting_excel_row + 5, current_excel_col).Value
+        starting_row = starting_row + 6
 
-		UNEA_2_starting_excel_row = 613
+		UNEA_2_starting_excel_row = starting_row      '613
 		UNEA_2_inc_type = left(ObjExcel.Cells(UNEA_2_starting_excel_row, current_excel_col).Value, 2)
 		UNEA_2_inc_verif = left(ObjExcel.Cells(UNEA_2_starting_excel_row + 1, current_excel_col).Value, 1)
 		UNEA_2_claim_suffix = ObjExcel.Cells(UNEA_2_starting_excel_row + 2, current_excel_col).Value
 		UNEA_2_start_date = ObjExcel.Cells(UNEA_2_starting_excel_row + 3, current_excel_col).Value
 		UNEA_2_pay_freq = ObjExcel.Cells(UNEA_2_starting_excel_row + 4, current_excel_col).Value
 		UNEA_2_inc_amount = ObjExcel.Cells(UNEA_2_starting_excel_row + 5, current_excel_col).Value
+        starting_row = starting_row + 6
 
-		UNEA_3_starting_excel_row = 619
+		UNEA_3_starting_excel_row = starting_row      '619
 		UNEA_3_inc_type = left(ObjExcel.Cells(UNEA_3_starting_excel_row, current_excel_col).Value, 2)
 		UNEA_3_inc_verif = left(ObjExcel.Cells(UNEA_3_starting_excel_row + 1, current_excel_col).Value, 1)
 		UNEA_3_claim_suffix = ObjExcel.Cells(UNEA_3_starting_excel_row + 2, current_excel_col).Value
 		UNEA_3_start_date = ObjExcel.Cells(UNEA_3_starting_excel_row + 3, current_excel_col).Value
 		UNEA_3_pay_freq = ObjExcel.Cells(UNEA_3_starting_excel_row + 4, current_excel_col).Value
 		UNEA_3_inc_amount = ObjExcel.Cells(UNEA_3_starting_excel_row + 5, current_excel_col).Value
+        starting_row = starting_row + 6
 
-		WKEX_starting_excel_row = 625
+		WKEX_starting_excel_row = starting_row        '625
 		WKEX_program = objExcel.Cells(WKEX_starting_excel_row, current_excel_col).Value
 		WKEX_fed_tax_retro = objExcel.Cells(WKEX_starting_excel_row + 1, current_excel_col).Value
 		WKEX_fed_tax_prosp = objExcel.Cells(WKEX_starting_excel_row + 2, current_excel_col).Value
@@ -1456,16 +1501,19 @@ For each MAXIS_case_number in case_number_array
 		WKEX_HC_Exp_Dues_Imp_Rel = objExcel.Cells(WKEX_starting_excel_row + 46, current_excel_col).Value
 		WKEX_HC_Exp_Othr = objExcel.Cells(WKEX_starting_excel_row + 47, current_excel_col).Value
 		WKEX_HC_Exp_Othr_Imp_Rel = objExcel.Cells(WKEX_starting_excel_row + 48, current_excel_col).Value
+        starting_row = starting_row + 49
 
-		WREG_starting_excel_row = 674
+		WREG_starting_excel_row = starting_row        '674
 		WREG_fs_pwe = ObjExcel.Cells(WREG_starting_excel_row, current_excel_col).Value
 		WREG_fset_status = left(ObjExcel.Cells(WREG_starting_excel_row + 1, current_excel_col).Value, 2)
 		WREG_defer_fs = ObjExcel.Cells(WREG_starting_excel_row + 2, current_excel_col).Value
 		WREG_fset_orientation_date = ObjExcel.Cells(WREG_starting_excel_row + 3, current_excel_col).Value
 		WREG_fset_sanction_date = ObjExcel.Cells(WREG_starting_excel_row + 4, current_excel_col).Value
-		WREG_num_sanctions = ObjExcel.Cells(WREG_starting_excel_row + 5, current_excel_col).Value
-		WREG_abawd_status = left(ObjExcel.Cells(WREG_starting_excel_row + 6, current_excel_col).Value, 2)
-		WREG_ga_basis = left(ObjExcel.Cells(WREG_starting_excel_row + 7, current_excel_col).Value, 2)
+        wreg_sanction_reason = ObjExcel.Cells(WREG_starting_excel_row + 5, current_excel_col).Value
+		WREG_num_sanctions = ObjExcel.Cells(WREG_starting_excel_row + 6, current_excel_col).Value
+		WREG_abawd_status = left(ObjExcel.Cells(WREG_starting_excel_row + 7, current_excel_col).Value, 2)
+		WREG_ga_basis = left(ObjExcel.Cells(WREG_starting_excel_row + 8, current_excel_col).Value, 2)
+        starting_row = starting_row + 9
 
 		'-------------------------------ACTUALLY FILLING OUT MAXIS
 
@@ -1545,7 +1593,7 @@ For each MAXIS_case_number in case_number_array
 		END IF
 		'DISA
 		If DISA_begin_date <> "" then
-			call write_panel_to_MAXIS_DISA(disa_begin_date, disa_end_date, disa_cert_begin, disa_cert_end, disa_wavr_begin, disa_wavr_end, disa_grh_begin, disa_grh_end, disa_cash_status, disa_cash_status_ver, disa_snap_status, disa_snap_status_ver, disa_hc_status, disa_hc_status_ver, disa_waiver, disa_drug_alcohol)
+			call write_panel_to_MAXIS_DISA(disa_begin_date, disa_end_date, disa_cert_begin, disa_cert_end, disa_wavr_begin, disa_wavr_end, disa_grh_begin, disa_grh_end, disa_cash_status, disa_cash_status_ver, disa_snap_status, disa_snap_status_ver, disa_hc_status, disa_hc_status_ver, disa_waiver, disa_1619, disa_drug_alcohol)
 			STATS_manualtime = STATS_manualtime + 30
 		END IF
 		'DSTT
@@ -1749,7 +1797,7 @@ For each MAXIS_case_number in case_number_array
 		END IF
 		'WREG
 		If WREG_fs_pwe <> "" OR WREG_ga_basis <> "" then
-			call write_panel_to_MAXIS_WREG(WREG_fs_pwe, WREG_fset_status, WREG_defer_fs, WREG_fset_orientation_date, WREG_fset_sanction_date, WREG_num_sanctions, WREG_abawd_status, WREG_ga_basis)
+			call write_panel_to_MAXIS_WREG(wreg_fs_pwe, wreg_fset_status, wreg_defer_fs, wreg_fset_orientation_date, wreg_fset_sanction_date, wreg_num_sanctions, wreg_sanction_reason, wreg_abawd_status, wreg_ga_basis)
 			STATS_manualtime = STATS_manualtime + 15
 		END IF
 	Next
@@ -2069,36 +2117,51 @@ FOR EACH MAXIS_case_number IN case_number_array
 			IF is_case_approved <> "UNAPPROVED" THEN
 				back_to_SELF
 			ELSE
-				EMWriteScreen "MFSM", 20, 71
-				transmit
-				EMWriteScreen "APP", 20, 71
+				Call write_value_and_transmit("MFSM", 20, 71)
+				Call write_value_and_transmit("APP", 20, 71)
 				STATS_manualtime = STATS_manualtime + 60    'adding manualtime for approval processing
-				transmit
+
+                Do
+                    EMReadscreen send_HRF, 3, 11, 50
+                    If send_HRF = "HRF" then Call write_value_and_transmit("Y", 12, 54)
+                Loop until send_HRF <> "HRF"
+                row = 13
+                Do
+                    EMReadscreen REI_issue, 1, row, 60
+                    If REI_issue = "_" then EmWriteScreen "Y", row, 60
+                    row = row + 1
+                Loop until REI_issue <> "_"
+                'transmit
+
 				DO
 					transmit
 					EMReadScreen not_allowed, 11, 24, 18
 					EMReadScreen locked_by_background, 6, 24, 19
+
 					MFIP_rei_screen = ""
 					CALL find_variable("(Y/", MFIP_rei_screen, 1)
 					IF MFIP_rei_screen = "N" THEN
 						EMSendKey "Y"
 						transmit
 					END IF
+
 					row = 1					'This is looking for if there are more months listed that need to be scrolled through to review.
 					col = 1
 					EMSearch "More: +", row, col
-					If row <> 0 then PF8
-					EMReadScreen package_approved, 8, 4, 38
+					If row <> 0 then
+                        PF8
+					    EMReadScreen package_approved, 8, 4, 39
+                    Else
+                        EMReadScreen package_approved, 8, 4, 39
+                    End if
 				LOOP Until package_approved = "approved"
 				transmit
 				'======= This handles the WF1 referral =========
-				EMReadScreen work_screen_check, 4, 2, 51
-				'msgbox work_screen_check
+                EMReadScreen work_screen_check, 4, 2, 51
 					IF work_screen_check = "WORK" Then
 						work_row = 7
 						DO
 							EMReadScreen WORK_ref_nbr, 2, work_row, 3
-							'msgbox WORK_ref_nbr
 							EMWriteScreen "x", work_row, 47
 							work_row = work_row + 1
 						LOOP UNTIL WORK_ref_nbr = "  "
