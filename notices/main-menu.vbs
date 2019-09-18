@@ -208,6 +208,13 @@ script_array_NOTICES_main(script_num).description			= "Creates a Word document i
 script_num = 0
 ReDim Preserve script_array_NOTICES_list(script_num)
 Set script_array_NOTICES_list(script_num) = new script
+script_array_NOTICES_list(script_num).script_name 			= " ABAWD E&T Voluntary "'needs spaces to generate button width properly.																'Script name
+script_array_NOTICES_list(script_num).file_name			= "ABAWD-E&T-Voluntary-WCOM.vbs"
+script_array_NOTICES_list(script_num).description 			= "Adds a WCOM to a notice for an ABAWD explaining that they do not need to comply with E&T."
+
+script_num = script_num + 1																
+ReDim Preserve script_array_NOTICES_list(script_num)
+Set script_array_NOTICES_list(script_num) = new script
 script_array_NOTICES_list(script_num).script_name 			= " ABAWD with Child in HH WCOM "'needs spaces to generate button width properly.																'Script name
 script_array_NOTICES_list(script_num).file_name			= "abawd-with-child-in-hh-wcom.vbs"
 script_array_NOTICES_list(script_num).description 			= "Adds a WCOM to a notice for an ABAWD adult receiving child under 18 exemption."
