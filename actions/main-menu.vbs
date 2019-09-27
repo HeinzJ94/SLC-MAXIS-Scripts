@@ -228,7 +228,7 @@ Do
 
 
 Loop until ready_to_exit_loop = true
-							msgbox script_to_run	
+
 call run_from_GitHub(script_to_run)
 
 stopscript
