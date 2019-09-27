@@ -57,7 +57,7 @@ class script_bowie
 			script_repository = "C:\DHS-MAXIS-Scripts\"
 			script_URL = script_repository & lcase(category) & "\" & lcase(replace(script_name, " ", "-") & ".vbs")
 		Else
-        	If script_repository = "" then script_repository = "https://raw.githubusercontent.com/MN-Script-Team/DHS-MAXIS-Scripts/master/"    'Assumes we're scriptwriters
+        	If script_repository = "" then script_repository = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/"    'Assumes we're scriptwriters
         	script_URL = script_repository & lcase(category) & "/" & replace(lcase(script_name) & ".vbs", " ", "-")
 		End if
     end property
