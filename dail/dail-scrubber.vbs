@@ -169,6 +169,10 @@ IF TYMA_check = "~*~3RD QUARTERLY REPORT" THEN call run_from_GitHub(script_repos
 EMReadScreen ABAWD_elig_end, 32, 6, 20
 IF ABAWD_elig_end = "FS ABAWD ELIGIBILITY HAS EXPIRED" THEN CALL run_from_GitHub(script_repository & "dail/abawd-fset-exemption-check.vbs")
 
+'ABAWD waivered area (This is only for October 2019 to assist converting cases with a custom TIKL)
+EMReadScreen ABAWD_waivered, 18, 6, 20
+IF ABAWD_waivered = "ABAWD WAIVER ENDED" THEN Call run_from_GitHub(script_repository & "dail/abawd-waiver-ended.vbs")
+
 'WAGE MATCH Scrubber
 EMReadScreen wage_match, 4, 6, 6
 IF wage_match = "WAGE" THEN CALL run_from_GitHub(script_repository & "dail/wage-match-scrubber.vbs")
