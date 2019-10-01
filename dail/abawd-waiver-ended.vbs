@@ -91,7 +91,7 @@ Function ABAWD_FSET_exemption_finder()
     placeholder_HH_array = ""
     person_count = 0
     FOR EACH person IN HH_member_array
-    	placeholder_HH_array = placeholder_HH_array & person & ","
+    	IF person <> "" THEN placeholder_HH_array = placeholder_HH_array & person & ","
     NEXT
 
     CALL check_for_MAXIS(False)
