@@ -537,9 +537,10 @@ Function ABAWD_FSET_exemption_finder()
 			EmWriteScreen "10", 13, 50
 			EmWriteScreen "30", 8, 50
 			EmWriteScreen "N", 8, 80
-			EmWriteScreen "x", 18, 61
+			EmWriteScreen "x", 13, 57
 			transmit
 			EmWriteScreen "M", 10, 55
+			transmit
 			PF3
 			transmit
     	closing_message = "*** NOTICE!!! ***" & vbCr & vbCr & "It appears there are NO missed exemptions for ABAWD or SNAP E&T in MAXIS for this case. The script has checked ADDR, EATS, MEMB, DISA, JOBS, BUSI, RBIC, UNEA, PREG, PROG, PBEN, SCHL, STIN, and STEC for member(s) " & household_persons & "." & vbCr & vbCr & "WREG has been updated. Please review the case, approve results, and run the ABAWD Converted script under agency custom."
