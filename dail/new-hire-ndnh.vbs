@@ -180,7 +180,10 @@ IF match_answer_droplist = "NO - run NEW HIRE" THEN
     PF3
 
     'GOING TO STAT
-    EMSendKey "s"
+		row = 6
+		col = 3
+		EMSearch "HIRE", row, col
+		EMWriteScreen "s", row, 3
     transmit
     EMReadScreen stat_check, 4, 20, 21
     If stat_check <> "STAT" then script_end_procedure("Unable to get to stat due to an error screen. Clear the error screen and return to the DAIL. Then try the script again.")
@@ -248,7 +251,7 @@ IF match_answer_droplist = "NO - run NEW HIRE" THEN
     	EMWriteScreen MAXIS_footer_month, 12, 54		'Puts footer month in as the month on prospective side of panel
     	IF month_hired = MAXIS_footer_month THEN     'This accounts for rare cases when new hire footer month is the same as the hire date.
     		EMWriteScreen day_hired, 12, 57			'Puts date hired if message is from same month as hire ex 01/16 new hire for 1/17/16 start date.
-    	ELSE
+			ELSE
     		EMWriteScreen current_day, 12, 57		'Puts today in as the day on prospective side, because that's the day we edited the panel
     	END IF
     	EMWriteScreen MAXIS_footer_year, 12, 60		'Puts footer year in on prospective side
