@@ -149,6 +149,8 @@ objExcel.Cells(1, 13).Value = "MAILING ZIP CODE"
 objExcel.Cells(1, 13).Font.Bold = True
 objExcel.Cells(1, 14).Value = "HOMELESS"
 objExcel.Cells(1, 14).Font.Bold = True
+objExcel.Cells(1, 15).Value = "LIVING SITUATION"
+objExcel.Cells(1, 15).Font.Bold = True
 
 excel_row = 2
 
@@ -216,6 +218,7 @@ Do
 		EMReadScreen city, 15, 8, 43
 		EMReadScreen State, 2, 8, 66
 		EMReadScreen Zip_code, 5, 9, 43
+		EMReadScreen living_situation, 2, 11, 43
 		addr_line_1 = replace(addr_line_1, "_", "")
 		addr_line_2 = replace(addr_line_2, "_", "")
 		city = replace(city, "_", "")
@@ -246,6 +249,7 @@ Do
 		objExcel.Cells(excel_row, 12) = mailing_State
 		objExcel.Cells(excel_row, 13) = mailing_Zip_code
 		objExcel.Cells(excel_row, 14) = homeless_code
+		objExcel.Cells(excel_row, 15) = living_situation
 	End IF
 
 	'Clearing variables for next loop.
@@ -260,7 +264,7 @@ Do
 	mailing_State = ""
 	mailing_Zip_code = ""
 	homeless_code = ""
-
+	living_situation = ""
 	excel_row = excel_row + 1
 	STATS_counter = STATS_counter + 1                      'adds one instance to the stats counter
 Loop until MAXIS_case_number = ""
