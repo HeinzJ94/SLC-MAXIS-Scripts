@@ -295,10 +295,11 @@ IF actions_taken <> "" THEN call write_bullet_and_variable_in_CASE_NOTE("Actions
 IF other_notes <> "" THEN call write_bullet_and_variable_in_CASE_NOTE("Notes", other_notes)
 call write_variable_in_CASE_NOTE("---")
 call write_variable_in_CASE_NOTE(worker_signature)
-
-IF collecting_ES_statistics = True THEN
-	'Updating the database
-	call write_MAXIS_info_to_ES_database(MAXIS_case_number, hh_member, ESMembName, EsSanctionPercentage, ESEmpsStatus, ESTANFMosUsed, ESExtensionReason, disa_end_date, primary_activity, ESDate, agency, ES_Counselor, ES_active, insert_string)
+IF update_type = "Employment Plan" THEN
+	IF collecting_ES_statistics = True THEN
+		'Updating the database
+		call write_MAXIS_info_to_ES_database(MAXIS_case_number, hh_member, ESMembName, EsSanctionPercentage, ESEmpsStatus, ESTANFMosUsed, ESExtensionReason, disa_end_date, primary_activity, ESDate, agency, ES_Counselor, ES_active, insert_string)
+	END IF
 END IF
 
 script_end_procedure("")
