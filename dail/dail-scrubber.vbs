@@ -177,5 +177,9 @@ IF ABAWD_waivered = "ABAWD WAIVER ENDED" THEN Call run_from_GitHub(script_reposi
 EMReadScreen wage_match, 4, 6, 6
 IF wage_match = "WAGE" THEN CALL run_from_GitHub(script_repository & "dail/wage-match-scrubber.vbs")
 
+'COLA other income scrubber
+EMReadScreen cola_other, 14, 6, 20
+IF cola_other = "CHECK FOR COLA" THEN CALL run_from_GitHub(script_repository & "dail/cola-other-income.vbs")
+
 'NOW IF NO SCRIPT HAS BEEN WRITTEN FOR IT, THE DAIL SCRUBBER STOPS AND GENERATES A MESSAGE TO THE WORKER.----------------------------------------------------------------------------------------------------
 script_end_procedure("You are not on a supported DAIL message. The script will now stop. " & vbNewLine & vbNewLine & "The message reads: " & full_message)
