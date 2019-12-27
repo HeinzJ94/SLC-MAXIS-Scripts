@@ -127,7 +127,7 @@ BeginDialog within_county_dlg, 0, 0, 211, 270, "Case Transfer"
   CheckBox 95, 125, 20, 10, "HC", HC_pend_check
   CheckBox 125, 125, 35, 10, "MNsure", mnsure_pend_check
   CheckBox 170, 125, 40, 10, "EMER", EMER_pend_check
-  DropListBox 100, 140, 65, 10, "Select one..."+chr(9)+"N/A"+chr(9)+"Yes"+chr(9)+"No", preg_y_n
+  'DropListBox 100, 140, 65, 10, "Select one..."+chr(9)+"N/A"+chr(9)+"Yes"+chr(9)+"No", preg_y_n
   EditBox 85, 160, 120, 15, Transfer_reason
   EditBox 85, 180, 120, 15, Action_to_be_taken
   CheckBox 10, 200, 195, 10, "Check to send out a SPEC/MEMO to client of new worker.", spec_memo_withincty_check 'add this as option for worker to use for w/in county xfer.
@@ -137,7 +137,7 @@ BeginDialog within_county_dlg, 0, 0, 211, 270, "Case Transfer"
     CancelButton 155, 250, 50, 15
   Text 15, 35, 60, 10, "Unit to transfer to: "
   Text 15, 165, 70, 10, "Reason for Transfer:"
-  Text 15, 145, 85, 10, "Pregnancy verif received:"
+  'Text 15, 145, 85, 10, "Pregnancy verif received:"
   Text 15, 15, 50, 10, "Case Number:"
   Text 15, 75, 80, 10, "Active On:"
   Text 15, 110, 60, 10, "Pending On:"
