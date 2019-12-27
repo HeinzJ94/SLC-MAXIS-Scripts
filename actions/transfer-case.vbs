@@ -115,7 +115,7 @@ EndDialog
 
 BeginDialog within_county_dlg, 0, 0, 211, 270, "Case Transfer"
   EditBox 70, 10, 50, 15, MAXIS_case_number
-  ComboBox 80, 30, 75, 15, "Select one..."+chr(9)+"N/A"+chr(9)+"Adult"+chr(9)+"Family"+chr(9)+"Cash"+chr(9)+"GRH"+chr(9)+"LTC"+chr(9)+"HC", unit_drop_down
+  'ComboBox 80, 30, 75, 15, "Select one..."+chr(9)+"N/A"+chr(9)+"Adult"+chr(9)+"Family"+chr(9)+"Cash"+chr(9)+"GRH"+chr(9)+"LTC"+chr(9)+"HC", unit_drop_down
   EditBox 130, 50, 65, 15, worker_to_transfer_to
   CheckBox 20, 90, 30, 10, "Cash", cash_active_check
   CheckBox 55, 90, 30, 10, "SNAP", SNAP_active_check
@@ -135,7 +135,7 @@ BeginDialog within_county_dlg, 0, 0, 211, 270, "Case Transfer"
   ButtonGroup ButtonPressed
     OkButton 100, 250, 50, 15
     CancelButton 155, 250, 50, 15
-  Text 15, 35, 60, 10, "Unit to transfer to: "
+  'Text 15, 35, 60, 10, "Unit to transfer to: "
   Text 15, 165, 70, 10, "Reason for Transfer:"
   'Text 15, 145, 85, 10, "Pregnancy verif received:"
   Text 15, 15, 50, 10, "Case Number:"
@@ -170,8 +170,8 @@ IF XFERRadioGroup = 0 THEN
 			cancel_confirmation
 			If MAXIS_case_number = "" then err_msg = err_msg & vbCr & "You must have a case number to continue."
 			IF len(worker_to_transfer_to) <> 7 then err_msg = err_msg & vbCr & "Please include X1## in the worker number"
-			IF preg_y_n = "Select one..." THEN err_msg = err_msg & vbCr & "Please indicate if a pregnancy verification was submitted or N/A if that is not applicable."
-			IF unit_drop_down = "Select one..." THEN err_msg = err_msg & vbCr & "Please indicate the unit to which the case is being transferred or N/A if that is not applicable."
+			'IF preg_y_n = "Select one..." THEN err_msg = err_msg & vbCr & "Please indicate if a pregnancy verification was submitted or N/A if that is not applicable."
+			'IF unit_drop_down = "Select one..." THEN err_msg = err_msg & vbCr & "Please indicate the unit to which the case is being transferred or N/A if that is not applicable."
 			IF err_msg <> "" THEN Msgbox err_msg
 			Loop until err_msg = ""
 			transmit
@@ -268,7 +268,7 @@ IF XFERRadioGroup = 0 THEN
 
 	'Case notes
 	EMSendKey "***Transfer within county***" & "<newline>"
-	IF unit_drop_down <> "N/A" THEN call write_variable_in_case_note("* Transfer to: " & unit_drop_down)
+	call write_variable_in_case_note("* Transfer to: " & worker_to_transfer_to)
 	IF active_programs <> "" THEN
 		EMSendKey "* Active Programs: " & active_programs & "<backspace>"
 		EMSendKey "<newline>"
@@ -277,7 +277,7 @@ IF XFERRadioGroup = 0 THEN
 		EMSendKey "* Pending Programs: " & pend_programs & "<backspace>"
 		EMSendKey "<newline>"
 	END IF
-	IF preg_y_n <> "N/A" THEN call write_variable_in_case_note("* Pregnancy verification rec'd: " & preg_y_n)
+	'IF preg_y_n <> "N/A" THEN call write_variable_in_case_note("* Pregnancy verification rec'd: " & preg_y_n)
 	call write_bullet_and_variable_in_case_note("Reason for transfer", Transfer_reason)
 	call write_bullet_and_variable_in_case_note("Actions to be taken", Action_to_be_taken)
 	IF spec_memo_withincty_check = checked THEN call write_variable_in_case_note ("SPEC/MEMO sent to client") 'adding this line in case note indicating a memo is sent to client
