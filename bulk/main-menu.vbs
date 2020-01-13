@@ -194,6 +194,12 @@ script_array_BULK_main(script_num).script_name				= "Update EOMC List"
 script_array_BULK_main(script_num).file_name				= "update-eomc-list.vbs"
 script_array_BULK_main(script_num).description				= "Updates a saved REPT/EOMC excel file from previous month with current case status."
 
+script_num = script_num + 1								'Increment by one
+ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
+Set script_array_BULK_main(script_num) = new script		'Set this array element to be a new script. Script details below...
+script_array_BULK_main(script_num).script_name				= "VA COLA Updater"
+script_array_BULK_main(script_num).file_name				= "VA-COLA-updater.vbs"
+script_array_BULK_main(script_num).description				= "Do not use if your name isn't Dave."
 '-------------------------------------------------------------------------------------------------------------------------ENHANCED LISTS
 'Resetting the variable
 script_num = 0
@@ -237,6 +243,13 @@ Set script_array_BULK_enhanced_list(script_num) = new script		'Set this array el
 script_array_BULK_enhanced_list(script_num).script_name 			= "Spenddown Report"
 script_array_BULK_enhanced_list(script_num).file_name				= "spenddown-report.vbs"
 script_array_BULK_enhanced_list(script_num).description 			= "Creates a list of HC Cases from a caseload(s) with a Spenddown indicated on MOBL."
+
+script_num = script_num + 1								'Increment by one
+ReDim Preserve script_array_BULK_enhanced_list(script_num)		'Resets the array to add one more element to it
+Set script_array_BULK_enhanced_list(script_num) = new script		'Set this array element to be a new script. Script details below...
+script_array_BULK_enhanced_list(script_num).script_name				= "SSA Income Missing Bank Account"													'needs spaces to generate button width properly.
+script_array_BULK_enhanced_list(script_num).file_name				= "ssa-missing-accounts.vbs"
+script_array_BULK_enhanced_list(script_num).description				= "Creates a list of HC cases with SSA income but no account panel listed."
 
 '-------------------------------------------------------------------------------------------------------------------------BULK STAT list
 'Resetting the variable
