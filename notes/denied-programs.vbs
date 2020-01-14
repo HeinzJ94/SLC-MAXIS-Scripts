@@ -522,7 +522,7 @@ If WCOM_check = 1 then call write_variable_in_case_note("* Added WCOM to notice.
 If NOMI_check = 1 then call write_variable_in_case_note("* Sent NOMI to client.")
 If case_noting_intake_dates = True then
 	call write_variable_in_case_note("---")
-	If HC_check = 1 then call write_bullet_and_variable_in_case_note("Last HC REIN date", HC_last_REIN_date)
+	'If HC_check = 1 then call write_bullet_and_variable_in_case_note("Last HC REIN date", HC_last_REIN_date)
 	If SNAP_check = 1 then call write_bullet_and_variable_in_case_note("Last SNAP REIN date", SNAP_last_REIN_date)
 	If cash_check = 1 then call write_bullet_and_variable_in_case_note("Last cash REIN date", cash_last_REIN_date)
 	If emer_check = 1 then call write_bullet_and_variable_in_case_note("Last emer REIN date", emer_last_REIN_date)
