@@ -141,6 +141,13 @@ script_array_BULK_main(script_num).description				= "Reviews the Drug Felon list
 script_num = script_num + 1								'Increment by one
 ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
 Set script_array_BULK_main(script_num) = new script		'Set this array element to be a new script. Script details below...
+script_array_BULK_main(script_num).script_name				= "HC Peer Review Selection"
+script_array_BULK_main(script_num).file_name				= "hc-peer-review-selection.vbs"
+script_array_BULK_main(script_num).description				= "Creates a list of active HC cases with an asset test and an action taken in the selected month for assigning peer reviews."
+
+script_num = script_num + 1								'Increment by one
+ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
+Set script_array_BULK_main(script_num) = new script		'Set this array element to be a new script. Script details below...
 script_array_BULK_main(script_num).script_name				= "INAC Scrubber"
 script_array_BULK_main(script_num).file_name				= "inac-scrubber.vbs"
 script_array_BULK_main(script_num).description				= "Checks cases on REPT/INAC (for criteria see SIR) case notes if passes criteria, and transfers if agency uses closed-file worker number. "
@@ -151,6 +158,13 @@ Set script_array_BULK_main(script_num) = new script		'Set this array element to 
 script_array_BULK_main(script_num).script_name				= "MEMO from List"
 script_array_BULK_main(script_num).file_name				= "memo-from-list.vbs"
 script_array_BULK_main(script_num).description				= "Creates the same MEMO on cases listed in REPT/ACTV, manually entered, or from an Excel spreadsheet of your choice."
+
+script_num = script_num + 1								'Increment by one
+ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
+Set script_array_BULK_main(script_num) = new script		'Set this array element to be a new script. Script details below...
+script_array_BULK_main(script_num).script_name				= "MFIP Peer Review Selection"
+script_array_BULK_main(script_num).file_name				= "mfip-peer-review-selection.vbs"
+script_array_BULK_main(script_num).description				= "Creates a list of active MFIP cases with an action taken in the selected month for assigning peer reviews."
 
 script_num = script_num + 1								'Increment by one
 ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
