@@ -10,9 +10,9 @@ STATS_denomination = "C"       'C is for each CASE
 IF IsEmpty(FuncLib_URL) = TRUE THEN	'Shouldn't load FuncLib if it already loaded once
 	IF run_locally = FALSE or run_locally = "" THEN	   'If the scripts are set to run locally, it skips this and uses an FSO below.
 		IF use_master_branch = TRUE THEN			   'If the default_directory is C:\DHS-MAXIS-Scripts\Script Files, you're probably a scriptwriter and should use the master branch.
-			FuncLib_URL = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/MASTER%20FUNCTIONS%20LIBRARY.vbs"
+			FuncLib_URL = "https://raw.githubusercontent.com/Hennepin-County/MAXIS-scripts/master/MASTER%20FUNCTIONS%20LIBRARY.vbs"
 		Else											'Everyone else should use the release branch.
-			FuncLib_URL = "https://raw.githubusercontent.com/SLC-MAXIS-Scripts/SLC-MAXIS-Scripts/master/MASTER%20FUNCTIONS%20LIBRARY.vbs"
+			FuncLib_URL = "https://raw.githubusercontent.com/Hennepin-County/MAXIS-scripts/master/MASTER%20FUNCTIONS%20LIBRARY.vbs"
 		End if
 		SET req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a FuncLib_URL
 		req.open "GET", FuncLib_URL, FALSE							'Attempts to open the FuncLib_URL
@@ -44,23 +44,14 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("10/02/2019", "Added footer month/year selection vs. defaulting to current footer month/year to review 36-month ABAWD lookback period.", "Ilse Ferris, Hennepin County")
 call changelog_update("12/12/2018", "Initial version.", "Ilse Ferris, Hennepin County")
 
 'Actually displays the changelog. This function uses a text file located in the My Documents folder. It stores the name of the script file and a description of the most recent viewed change.
 changelog_display
 'END CHANGELOG BLOCK =======================================================================================================
 
-BeginDialog ABAWD_dialog, 0, 0, 176, 125, "Counted ABAWD months"
-  EditBox 85, 65, 50, 15, MAXIS_case_number
-  EditBox 85, 85, 20, 15, HH_memb
-  ButtonGroup ButtonPressed
-    OkButton 40, 105, 50, 15
-    CancelButton 95, 105, 50, 15
-  Text 35, 70, 50, 10, "Case Number:"
-  Text 15, 20, 150, 35, "This script will provide information regarding public assistance issuanceson the case, and what is marked on the ABAWD tracking record for each member."
-  GroupBox 10, 5, 160, 55, "Using this script:"
-  Text 45, 90, 35, 10, "Member #:"
-EndDialog
+
 
 'The script============================================================================================================================
 'Connects to MAXIS, grabbing the case MAXIS_case_number
@@ -71,14 +62,31 @@ Call MAXIS_case_number_finder(MAXIS_case_number)
 Call MAXIS_footer_finder(MAXIS_footer_month, MAXIS_footer_year)
 HH_memb = "01"
 
+Dialog1 = ""
+BeginDialog Dialog1, 0, 0, 176, 145, "Counted ABAWD months"
+  EditBox 85, 65, 50, 15, MAXIS_case_number
+  EditBox 85, 85, 20, 15, HH_memb
+  EditBox 85, 105, 20, 15, MAXIS_footer_month
+  EditBox 110, 105, 20, 15, MAXIS_footer_year
+  ButtonGroup ButtonPressed
+    OkButton 40, 125, 50, 15
+    CancelButton 95, 125, 50, 15
+  GroupBox 10, 5, 160, 55, "Using this script:"
+  Text 45, 90, 35, 10, "Member #:"
+  Text 35, 70, 50, 10, "Case Number:"
+  Text 15, 110, 65, 10, "Footer month/year:"
+  Text 15, 20, 150, 35, "This script will provide information regarding public assistance issuanceson the case, and what is marked on the ABAWD tracking record for each member."
+EndDialog
 'Main dialog: user will input case number and initial month/year will default to current month - 1 and member 01 as member number
 DO
 	DO
 		err_msg = ""							'establishing value of variable, this is necessary for the Do...LOOP
-		dialog ABAWD_dialog				'main dialog
+		dialog Dialog1				'main dialog
 		If buttonpressed = 0 THEN stopscript	'script ends if cancel is selected
 		IF len(MAXIS_case_number) > 8 or isnumeric(MAXIS_case_number) = false THEN err_msg = err_msg & vbCr & "* Enter a valid case number."		'mandatory field
 		IF len(HH_memb) <> 2 or isnumeric(MAXIS_case_number) = false THEN err_msg = err_msg & vbCr & "* Enter a valid 2-digit member number."		'mandatory field
+        If IsNumeric(MAXIS_footer_month) = False or len(MAXIS_footer_month) <> 2 then err_msg = err_msg & vbNewLine & "* Enter a valid 2-digit MAXIS footer month."
+        If IsNumeric(MAXIS_footer_year) = False or len(MAXIS_footer_year) <> 2 then err_msg = err_msg & vbNewLine & "* Enter a valid 2-digit MAXIS footer year."
 		IF err_msg <> "" THEN MsgBox "*** NOTICE!!! ***" & vbNewLine & err_msg & vbNewLine		'error message including instruction on what needs to be fixed from each mandatory field if incorrect
 	LOOP UNTIL err_msg = ""									'loops until all errors are resolved
 	CALL check_for_password(are_we_passworded_out)			'function that checks to ensure that the user has not passworded out of MAXIS, allows user to password back into MAXIS
@@ -86,6 +94,7 @@ Loop until are_we_passworded_out = false					'loops until user passwords back in
 
 MAXIS_background_check
 back_to_self
+Call MAXIS_footer_month_confirmation
 
 'For each HH_memb in HH_member_array
 Call navigate_to_MAXIS_screen("STAT", "WREG")
@@ -149,13 +158,7 @@ DO
     If bene_mo_col = "59" then counted_date_month = "11"
     If bene_mo_col = "63" then counted_date_month = "12"
 
-    'counted date year: this is found on rows 7-11. Row 11 is current year plus one, so this will be exclude this list.
-    If bene_yr_row = "10" then counted_date_year = right(DatePart("yyyy", date), 2)
-    If bene_yr_row = "9"  then counted_date_year = right(DatePart("yyyy", DateAdd("yyyy", -1, date)), 2)
-    If bene_yr_row = "8"  then counted_date_year = right(DatePart("yyyy", DateAdd("yyyy", -2, date)), 2)
-    If bene_yr_row = "7"  then counted_date_year = right(DatePart("yyyy", DateAdd("yyyy", -3, date)), 2)
-
-	EMReadScreen counted_date_year, 2, bene_yr_row, 14								'reading counted year date
+	EMReadScreen counted_date_year, 2, bene_yr_row, 15								'reading counted year date
 	abawd_counted_months_string = counted_date_month & "/" & counted_date_year		'creating new date variable
 
 	ObjExcel.Cells(excel_row, 1).Value = abawd_counted_months_string
