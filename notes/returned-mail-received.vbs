@@ -73,7 +73,7 @@ BeginDialog RETURNED_MAIL, 0, 0, 185, 335, "RETURNED MAIL DIALOG"
   EditBox 135, 145, 40, 15, new_ZIP
   DropListBox 110, 165, 35, 15, "No"+chr(9)+"Yes", updated_ADDR
   EditBox 110, 180, 65, 15, new_COUNTY
-  CheckBox 50, 200, 70, 10, "Sent DHS-2919A", verifA_sent_checkbox
+  CheckBox 50, 200, 70, 10, "Sent DHS-2919", verifA_sent_checkbox
   CheckBox 50, 210, 65, 10, "Sent DHS-2952", SHEL_form_sent_checkbox
   CheckBox 50, 220, 65, 10, "Sent DHS-2402", CRF_sent_checkbox
   DropListBox 120, 230, 30, 15, "No"+chr(9)+"Yes", returned_mail_resent_list
@@ -225,7 +225,7 @@ IF MNsure_active = "Yes" and MNsure_ADDR = "No" THEN MsgBox "Please update the M
 'creates a message box reminding the worker to review their case note prior to Auto-TIKLing.
 IF verifA_sent_checkbox = 1 THEN MsgBox "Please review your case note for accuracy. When you click OK or press enter the script will enter an Auto-TIKL for you."
 
-'Checks if a DHS2919A mailed and sets a TIKL for the return of the info.
+'Checks if a DHS2919 mailed and sets a TIKL for the return of the info.
 IF verifA_sent_checkbox = 1 THEN
 	call navigate_to_MAXIS_screen("dail", "writ")
 
@@ -233,12 +233,12 @@ IF verifA_sent_checkbox = 1 THEN
 	call create_MAXIS_friendly_date(date, 10, 5, 18)
 
 	'Writing in the rest of the TIKL.
-	call write_variable_in_TIKL("ADDR verification requested via 2919A after returned mail being rec'd should have returned by now. If not received, take appropriate action. (TIKL auto-generated from script)." )
+	call write_variable_in_TIKL("ADDR verification requested via 2919 after returned mail being rec'd should have returned by now. If not received, take appropriate action. (TIKL auto-generated from script)." )
 	transmit
 	PF3
 
 	'Success message
-	MsgBox "Success! TIKL has been sent for 10 days from now for the ADDR verification requested via 2919A."
+	MsgBox "Success! TIKL has been sent for 10 days from now for the ADDR verification requested via 2919."
 
 End if
 
