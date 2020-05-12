@@ -491,7 +491,7 @@ For all_elig_results = 0 to UBound (BENE_AMOUNT_ARRAY,2)
 				EMReadScreen GA_bene_cash_amt, 8, 14, 72
 				EMWriteScreen "GAB2", 20, 70
 				transmit
-				EMReadScreen prorate_date, 5, 10, 14
+				EMReadScreen prorate_date, 5, 10, 15
 				BENE_AMOUNT_ARRAY(other_cash, all_elig_results) = trim(GA_bene_cash_amt)
 				IF prorate_date <> "     " Then BENE_AMOUNT_ARRAY(case_prorated_date, all_elig_results) = Replace(prorate_date, " ", "/") & "/" & BENE_AMOUNT_ARRAY(benefit_year,all_elig_results)
 			Else
