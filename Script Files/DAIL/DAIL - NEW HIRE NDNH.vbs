@@ -254,7 +254,7 @@ EMSendKey replace(new_hire_first_line, new_HIRE_SSN, "XXX-XX-XXXX") & "<newline>
 
 'Writes that the message is unreported, and that the proofs are being sent/TIKLed for.
 call write_variable_in_case_note("* Job unreported to the agency.")
-call write_variable_in_case_note("* Sent employment verification and DHS-2919B (Verification Request Form - B).")
+call write_variable_in_case_note("* Sent employment verification and DHS-2919 (Verification Request Form).")
 If create_JOBS_checkbox = checked then call write_variable_in_case_note("* JOBS updated with new hire info from DAIL.")
 if CCA_checkbox = 1 then call write_variable_in_case_note("* Sent status update to CCA.")
 if ES_checkbox = 1 then call write_variable_in_case_note("* Sent status update to ES.")
