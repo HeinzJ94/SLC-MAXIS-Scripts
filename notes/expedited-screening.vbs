@@ -77,14 +77,14 @@ BeginDialog exp_screening_dialog, 0, 0, 181, 210, "Expedited Screening Dialog"
 EndDialog
 
 'DATE BASED LOGIC FOR UTILITY AMOUNTS------------------------------------------------------------------------------------------
-If date >= cdate("10/01/2019") then			'these variables need to change every October
+If date >= cdate("10/01/2020") then			'these variables need to change every October
+	heat_AC_amt = 496
+	electric_amt = 154
+	phone_amt = 56
+Else
 	heat_AC_amt = 490
 	electric_amt = 143
 	phone_amt = 49
-Else
-	heat_AC_amt = 493
-	electric_amt = 126
-	phone_amt = 47
 End if
 
 'THE SCRIPT----------------------------------------------------------------------------------------------------
