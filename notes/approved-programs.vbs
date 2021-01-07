@@ -62,7 +62,7 @@ BeginDialog benefits_approved, 0, 0, 316, 235, "Benefits Approved"
   CheckBox 150, 5, 50, 10, "Health Care", hc_approved_check
   CheckBox 210, 5, 50, 10, "Emergency", emer_approved_check
   EditBox 60, 20, 55, 15, MAXIS_case_number
-  ComboBox 180, 20, 80, 15, "Initial"+chr(9)+"Renewal"+chr(9)+"Recertification"+chr(9)+"Change"+chr(9)+"Reinstate", type_of_approval
+  ComboBox 180, 20, 80, 15, "Initial"+chr(9)+"Renewal"+chr(9)+"Recertification"+chr(9)+"Change"+chr(9)+"Reinstate"+chr(9)+"15% Increase", type_of_approval
   EditBox 115, 45, 195, 15, benefit_breakdown
   CheckBox 5, 65, 255, 10, "Check here to have the script autofill the approval amounts.", autofill_check
   EditBox 175, 80, 15, 15, start_mo
@@ -150,7 +150,8 @@ Do
 	Loop until err_msg = ""
 	call check_for_password(are_we_passworded_out)  'Adding functionality for MAXIS v.6 Passworded Out issue'
 Loop until are_we_passworded_out = false
-
+'converts the 15% increase verbiage for teh final note
+if type_of_approval = "15% Increase" then type_of_approval = "Temporary Allotment Increase"
 Call date_array_generator (start_mo, start_yr, date_array)
 
 'TODO add constants for the array
@@ -600,6 +601,7 @@ IF cash_approved_check = checked THEN approved_programs = approved_programs & "C
 IF emer_approved_check = checked THEN approved_programs = approved_programs & "EMER/"
 EMSendKey "---Approved " & approved_programs & "<backspace>" & " " & type_of_approval & "---" & "<newline>"
 IF postponed_verif_check = checked THEN write_variable_in_CASE_NOTE("**EXPEDITED SNAP APPROVED BUT CASE HAS POSTPONED VERIFICATIONS.**")
+IF type_of_approval = "Temporary Allotment Increase" then call write_variable_in_CASE_NOTE("*** Reapproved SNAP / MFIP to reflect the temporary 15% increase in the Thrifty Food Plan effective January - June 2021")
 IF benefit_breakdown <> "" THEN call write_bullet_and_variable_in_case_note("Benefit Breakdown", benefit_breakdown)
 IF autofill_check = checked THEN
 	FOR snap_approvals = 0 to UBound(BENE_AMOUNT_ARRAY,2)
