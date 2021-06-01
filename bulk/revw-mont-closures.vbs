@@ -122,7 +122,7 @@ If revw_check = checked then
 	row = 7
 	Do
 		EMReadScreen MAXIS_case_number, 8, row, 6																'Gets case number
-		EMReadScreen cash_status, 1, row, 35															'Checks for cash status
+		EMReadScreen cash_status, 1, row, 39															'Checks for cash status
 		If cash_status = "N" or cash_status = "I" then are_programs_closing = True						'If "N" or "I", adds to the array
 		EMReadScreen FS_status, 1, row, 45																'Checks for FS status
 		If FS_status = "N" or FS_status = "I" then are_programs_closing = True							'If "N" or "I", adds to the array
