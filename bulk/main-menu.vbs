@@ -211,9 +211,9 @@ script_array_BULK_main(script_num).description				= "Updates a saved REPT/EOMC e
 script_num = script_num + 1								'Increment by one
 ReDim Preserve script_array_BULK_main(script_num)			'Resets the array to add one more element to it
 Set script_array_BULK_main(script_num) = new script		'Set this array element to be a new script. Script details below...
-script_array_BULK_main(script_num).script_name				= "VA COLA Updater"
-script_array_BULK_main(script_num).file_name				= "VA-COLA-updater.vbs"
-script_array_BULK_main(script_num).description				= "Do not use if your name isn't Dave."
+script_array_BULK_main(script_num).script_name				= "Warrants By Vendor"
+script_array_BULK_main(script_num).file_name				= "REPT-VNDW.vbs"
+script_array_BULK_main(script_num).description				= "Pulls a list of warrants issued to vendor(s) into an excel file."
 '-------------------------------------------------------------------------------------------------------------------------ENHANCED LISTS
 'Resetting the variable
 script_num = 0
