@@ -214,6 +214,14 @@ For each worker in worker_number_array
 		Loop until row = 19 or trim(MAXIS_case_number) = ""
 
 		PF8 'going to the next screen
+														
+		'This section sends a couple different keystrokes, as MAXIS will have an error after 500 PF8 in a row'
+		pf8_count = pf8_count + 1
+		IF pf8_count = 450 Then	
+			PF1 'pull up help box'
+			PF1 'close help box'
+			pf8_count = 0
+		END IF
 	Loop until last_page_check = "THIS IS THE LAST PAGE"
 next
 
