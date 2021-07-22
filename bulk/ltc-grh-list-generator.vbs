@@ -170,7 +170,7 @@ NEXT
 worker_number_array = split(worker_number, ",")
 
 For each worker in worker_number_array
-
+	PF8_count = 0 'set initial variable
 	If trim(worker) = "" then exit for
 
 	worker_ID = trim(worker)
