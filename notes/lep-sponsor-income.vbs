@@ -101,7 +101,18 @@ Loop until worker_signature <> ""
 
 'Determines the income limits
 ' >> Income limits from CM 19.06 - MAXIS Gross Income 130% FPG (Updated effective 10/01/20)
-If date >= cdate("10/01/2020") then
+If date >= cdate("10/01/2021") then
+    If sponsor_HH_size = 1 then income_limit = 1396
+    If sponsor_HH_size = 2 then income_limit = 1888
+    If sponsor_HH_size = 3 then income_limit = 2379
+    If sponsor_HH_size = 4 then income_limit = 2871
+    If sponsor_HH_size = 5 then income_limit = 3363
+    If sponsor_HH_size = 6 then income_limit = 3855
+    If sponsor_HH_size = 7 then income_limit = 4347
+    If sponsor_HH_size = 8 then income_limit = 4839
+    If sponsor_HH_size > 8 then income_limit = 4839 + (492 * (sponsor_HH_size - 8))
+else
+    '2020 Amounts 
     If sponsor_HH_size = 1 then income_limit = 1383
     If sponsor_HH_size = 2 then income_limit = 1868
     If sponsor_HH_size = 3 then income_limit = 2353
@@ -111,17 +122,6 @@ If date >= cdate("10/01/2020") then
     If sponsor_HH_size = 7 then income_limit = 4295
     If sponsor_HH_size = 8 then income_limit = 4780
     If sponsor_HH_size > 8 then income_limit = 4780 + (486 * (sponsor_HH_size - 8))
-else
-    '2019 Amounts 
-    If sponsor_HH_size = 1 then income_limit = 1354
-    If sponsor_HH_size = 2 then income_limit = 1832
-    If sponsor_HH_size = 3 then income_limit = 2311
-    If sponsor_HH_size = 4 then income_limit = 2790
-    If sponsor_HH_size = 5 then income_limit = 3269
-    If sponsor_HH_size = 6 then income_limit = 3748
-    If sponsor_HH_size = 7 then income_limit = 4227
-    If sponsor_HH_size = 8 then income_limit = 4705
-    If sponsor_HH_size > 8 then income_limit = 4705 + (479 * (sponsor_HH_size - 8))
 End if
 
 'If any income variables are not numeric, the script will convert them to a "0" for calculating
