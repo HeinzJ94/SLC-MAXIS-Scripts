@@ -464,20 +464,20 @@ EMReadScreen addr_county, 2, 9, 66
 EMReadScreen addr_verif, 2, 9, 74
 EMReadScreen addr_homeless, 1, 10, 43
 EMReadScreen addr_reserv, 1, 10, 74
-EMReadScreen mail_line1, 22, 13, 43
+EMReadScreen mail_line1, 22, 12, 49
 	mail_line1 = replace(mail_line1, "_", "")
-EMReadScreen mail_line2, 22, 14, 43
+EMReadScreen mail_line2, 22, 13, 49
 	mail_line2 = replace(mail_line2, "_", "")
-EMReadScreen mail_city, 15, 15, 43
+EMReadScreen mail_city, 15, 14, 49
 	mail_city = replace(mail_city, "_", "")
-EMReadScreen mail_zip, 5, 16, 15
-EMReadScreen phone1, 14, 17, 45
+EMReadScreen mail_zip, 5, 15, 58
+EMReadScreen phone1, 14, 16, 39
 	phone1 = replace(phone1, " ) ", "-")
 	phone1 = replace(phone1, " ", "-")
-EMReadScreen phone2, 14, 18, 45
+EMReadScreen phone2, 14, 17, 39
 	phone2 = replace(phone2, " ) ", "-")
 	phone2 = replace(phone2, " ", "-")
-EMReadScreen phone3, 14, 19, 45
+EMReadScreen phone3, 14, 18, 39
 	phone3 = replace(phone3, " ) ", "-")
 	phone3 = replace(phone3, " ", "-")
 
