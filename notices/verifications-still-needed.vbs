@@ -160,7 +160,7 @@ call navigate_to_MAXIS_screen("stat", "memb")
 'Pulling household and worker info for the letter
 call navigate_to_MAXIS_screen("stat", "addr") 														'Navigates to STAT/ADDR
 
-EMReadScreen mailing_address_line1, 22, 13, 43																							'Reads first line of mailing address
+EMReadScreen mailing_address_line1, 22, 12, 49																							'Reads first line of mailing address
 IF mailing_address_line1 = "______________________" THEN          													'If nothing on first line of mailing address, uses physical address
 		EMReadScreen addr_line1, 21, 6, 43																											'Reads first line of physical address
 		EMReadScreen addr_line2, 21, 7, 43																											'Reads second line of physical address
@@ -171,11 +171,11 @@ IF mailing_address_line1 = "______________________" THEN          													'
 		hh_address_line2 = addr_city & " " & addr_state & " " & addr_zip												'Combines city, state, and zip of physical address in to new variable
 		hh_address = replace(hh_address, "_", "") & vbCrLf & replace(hh_address_line2, "_", "")	'Cleans up the new variables, makes them pretty for the Word doc
 ELSE
-		EMReadScreen mailing_address_line1, 21, 13, 43																					'If there is text on the first line of the mailing address then the next few lines do the same as above, only it uses the mailing address info insted.
-		EMReadScreen mailing_address_line2, 21, 14, 43
-		EMReadScreen mailing_address_city, 15, 15, 43
-		EMReadScreen mailing_address_state, 2, 16, 43
-		EMReadScreen mailing_address_zip, 5, 16, 52
+		EMReadScreen mailing_address_line1, 21, 12, 49																					'If there is text on the first line of the mailing address then the next few lines do the same as above, only it uses the mailing address info insted.
+		EMReadScreen mailing_address_line2, 21, 13, 49
+		EMReadScreen mailing_address_city, 15, 14, 49
+		EMReadScreen mailing_address_state, 2, 15, 49
+		EMReadScreen mailing_address_zip, 5, 15, 58
 		hh_address = mailing_address_line1 & " " & mailing_address_line2
 		hh_address_line2 = mailing_address_city & " " & mailing_address_state & " " & mailing_address_zip
 		hh_address = replace(hh_address, "_", "") & vbCrLf & replace(hh_address_line2, "_", "")
