@@ -135,7 +135,7 @@ client_name = first_name & " " & last_name
 
 'this reads current mailing address
 call navigate_to_MAXIS_screen("stat", "addr")
-EMReadScreen mail_address, 1, 13, 64
+EMReadScreen mail_address, 1, 12, 70
 If mail_address = "_" then
      EMReadScreen client_1staddress, 21, 06, 43
      EMReadScreen client_2ndaddress, 21, 07, 43
@@ -143,11 +143,11 @@ If mail_address = "_" then
      EMReadScreen client_state, 2, 08, 66
      EMReadScreen client_zip, 7, 09, 43
 Else
-     EMReadScreen client_1staddress, 21, 13, 43
-     EMReadScreen client_2ndaddress, 21, 14, 43
-     EMReadScreen client_city, 14, 15, 43
-     EMReadScreen client_state, 2, 16, 43
-     EMReadScreen client_zip, 7, 16, 52
+     EMReadScreen client_1staddress, 21, 12, 49
+     EMReadScreen client_2ndaddress, 21, 13, 49
+     EMReadScreen client_city, 14, 14, 49
+     EMReadScreen client_state, 2, 15, 49
+     EMReadScreen client_zip, 7, 15, 58
 End If
 client_address = replace(client_1staddress, "_","") & " " & replace(client_2ndaddress, "_","") & " " & replace(client_city, "_","") & ", " & replace(client_state, "_","") & " " & replace(client_zip, "_","")
 

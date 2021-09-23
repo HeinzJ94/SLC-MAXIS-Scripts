@@ -376,13 +376,13 @@ For person = 0 to Ubound(dfln_to_process_array, 2)	'The script now needs to get 
 		dfln_to_process_array(stat_addr, person) = stat_addr_1 & "~" & stat_addr_2 & "~" & stat_addr_C & "~" & stat_addr_S & "~" & stat_addr_Z
 		
 		'Gathering mailing address if different
-		EMReadScreen stat_mail_1, 22, 13, 43
+		EMReadScreen stat_mail_1, 22, 12, 49
 		stat_mail_1 = replace(stat_mail_1, "_", "")
 		If stat_mail_1 <> "" Then
-			EMReadScreen stat_mail_2, 22, 14, 43
-			EMReadScreen stat_mail_C, 15, 15, 43
-			EMReadScreen stat_mail_S, 2,  16, 43
-			EMReadScreen stat_mail_Z, 7,  16, 52
+			EMReadScreen stat_mail_2, 22, 13, 49
+			EMReadScreen stat_mail_C, 15, 14, 49
+			EMReadScreen stat_mail_S, 2,  15, 49
+			EMReadScreen stat_mail_Z, 7,  15, 58
 			stat_mail_2 = replace(stat_mail_2, "_", "")
 			stat_mail_C = replace(stat_mail_C, "_", "")
 			stat_mail_S = replace(stat_mail_S, "_", "")

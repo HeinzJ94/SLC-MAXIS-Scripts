@@ -227,11 +227,11 @@ Do
 		'Reading homeless code
 		EMReadScreen homeless_code, 1, 10, 43
 		'Reading and cleaning up mailing address
-		EMReadScreen mailing_addr_line_1, 22, 13, 43
-		EMReadScreen mailing_addr_line_2, 22, 14, 43
-		EMReadScreen mailing_city, 15, 15, 43
-		EMReadScreen mailing_State, 2, 16, 43
-		EMReadScreen mailing_Zip_code, 5, 16, 52
+		EMReadScreen mailing_addr_line_1, 22, 12, 49
+		EMReadScreen mailing_addr_line_2, 22, 13, 49
+		EMReadScreen mailing_city, 15, 14, 49
+		EMReadScreen mailing_State, 2, 15, 49
+		EMReadScreen mailing_Zip_code, 5, 15, 58
 		mailing_addr_line_1 = replace(mailing_addr_line_1, "_", "")
 		mailing_addr_line_2 = replace(mailing_addr_line_2, "_", "")
 		mailing_city = replace(mailing_city, "_", "")

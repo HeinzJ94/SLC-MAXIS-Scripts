@@ -169,9 +169,9 @@ interview_date = date & ""
 
 'Defaults the Client Phone number to the first phone number listed on MAXIS in STAT/ADDR
 Call navigate_to_MAXIS_screen ("STAT", "ADDR")
-EMReadScreen phone_01, 3, 17, 45
-EMReadScreen phone_02, 3, 17, 51
-EMReadScreen phone_03, 4, 17, 55
+EMReadScreen phone_01, 3, 16, 39
+EMReadScreen phone_02, 3, 16, 45
+EMReadScreen phone_03, 4, 16, 49
 phone_number = phone_01 & "-" & phone_02 & "-" & phone_03 & ""
 
 

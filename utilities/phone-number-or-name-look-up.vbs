@@ -357,12 +357,12 @@ FOR EACH MAXIS_case_number in case_number_array
 	EMSearch "PRIVILEGED", row, col
 	IF row <> 0 THEN msgbox MAXIS_case_number
 	IF row = 0 THEN
-		EMReadscreen area_code_1, 3, 17, 45
-		EMReadscreen addr_phone_number_1, 8, 17, 51
-		EMReadscreen area_code_2, 3, 18, 45
-		EMReadscreen addr_phone_number_2, 8, 18, 51
-		EMReadscreen area_code_3, 3, 19, 45
-		EMReadscreen addr_phone_number_3, 8, 19, 51
+		EMReadscreen area_code_1, 3, 16, 39
+		EMReadscreen addr_phone_number_1, 8, 16, 45
+		EMReadscreen area_code_2, 3, 17, 39
+		EMReadscreen addr_phone_number_2, 8, 17, 45
+		EMReadscreen area_code_3, 3, 18, 39
+		EMReadscreen addr_phone_number_3, 8, 18, 45
 		complete_phone_1 = area_code_1 & replace(addr_phone_number_1, " ", "")
 		complete_phone_2 = area_code_2 & replace(addr_phone_number_2, " ", "")
 		complete_phone_3 = area_code_3 & replace(addr_phone_number_3, " ", "")

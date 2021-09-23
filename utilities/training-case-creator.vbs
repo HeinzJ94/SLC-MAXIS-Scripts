@@ -530,20 +530,20 @@ For cases_to_make = 1 to how_many_cases_to_make
 	EMWriteScreen ADDR_addr_verif, 9, 74
 	EMWriteScreen ADDR_homeless, 10, 43
 	EMWriteScreen ADDR_reservation, 10, 74
-	EMWriteScreen ADDR_mailing_addr_line_one, 13, 43
-	EMWriteScreen ADDR_mailing_addr_line_two, 14, 43
-	EMWriteScreen ADDR_mailing_addr_city, 15, 43
-	If ADDR_mailing_addr_line_one <> "" then EMWriteScreen "MN", 16, 43	'Only writes if the user indicated a mailing address. Defaults to MN at this time.
-	EMWriteScreen ADDR_mailing_addr_zip, 16, 52
-	EMWriteScreen left(ADDR_phone_1, 3), 17, 45						'Has to split phone numbers up into three parts each
-	EMWriteScreen mid(ADDR_phone_1, 5, 3), 17, 51
-	EMWriteScreen right(ADDR_phone_1, 4), 17, 55
-	EMWriteScreen left(ADDR_phone_2, 3), 18, 45
-	EMWriteScreen mid(ADDR_phone_2, 5, 3), 18, 51
-	EMWriteScreen right(ADDR_phone_2, 4), 18, 55
-	EMWriteScreen left(ADDR_phone_3, 3), 19, 45
-	EMWriteScreen mid(ADDR_phone_3, 5, 3), 19, 51
-	EMWriteScreen right(ADDR_phone_3, 4), 19, 55
+	EMWriteScreen ADDR_mailing_addr_line_one, 12, 49
+	EMWriteScreen ADDR_mailing_addr_line_two, 13, 49
+	EMWriteScreen ADDR_mailing_addr_city, 14, 49
+	If ADDR_mailing_addr_line_one <> "" then EMWriteScreen "MN", 15, 49	'Only writes if the user indicated a mailing address. Defaults to MN at this time.
+	EMWriteScreen ADDR_mailing_addr_zip, 15, 58
+	EMWriteScreen left(ADDR_phone_1, 3), 16, 39						'Has to split phone numbers up into three parts each
+	EMWriteScreen mid(ADDR_phone_1, 5, 3), 16, 45
+	EMWriteScreen right(ADDR_phone_1, 4), 16, 49
+	EMWriteScreen left(ADDR_phone_2, 3), 17, 39
+	EMWriteScreen mid(ADDR_phone_2, 5, 3), 17, 45
+	EMWriteScreen right(ADDR_phone_2, 4), 17, 49
+	EMWriteScreen left(ADDR_phone_3, 3), 18, 39
+	EMWriteScreen mid(ADDR_phone_3, 5, 3), 18, 45
+	EMWriteScreen right(ADDR_phone_3, 4), 18, 49
 
 	'Reads the case number and adds to an array before exiting
 	EMReadScreen current_case_number, 8, 20, 37
