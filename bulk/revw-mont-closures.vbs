@@ -270,7 +270,8 @@ If revw_check = checked then
 				IF last_day_to_turn_in_HC_docs <> "" THEN call write_variable_in_case_note("* Client has until " & last_day_to_turn_in_HC_docs & " to turn in HC review doc and/or proofs.")
 				If cash_review_status <> "" and cash_intake_date <> "" then call write_variable_in_case_note("* Client needs to turn in new application for cash on " & cash_intake_date & ".")
 				If FS_review_status <> "" and SNAP_intake_date <> "" then call write_variable_in_case_note("* Client needs to turn in new application for SNAP on " & SNAP_intake_date & ".")
-				call write_variable_in_case_note("* Client needs to turn in new application for HC after " & HC_intake_date & ".")
+				'If HC_review_status <> "" and HC_intake_date <> "" then call write_variable_in_case_note("* Client needs to turn in new application for HC after " & HC_intake_date & ".")
+				'HC revw case note language is questionable at best. Removed from note for now. Review when/if HC reviews resume.
 
 				call write_variable_in_case_note("---")
 				call write_variable_in_case_note(worker_signature & ", via automated script.")
