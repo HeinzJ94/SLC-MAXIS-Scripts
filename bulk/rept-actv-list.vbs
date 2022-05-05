@@ -316,7 +316,7 @@ If collect_COLA_stats = True then
 				End if
 				EMReadScreen income_type, 2, 5, 37	'Reading income type
 				If income_type = "06" or income_type = "11" or income_type = "12" or income_type = "13" or income_type = "83" or _
-				income_type = "17" or income_type = "18" or income_type = "29" or income_type = "08" or income_type = "35" then	'Only runs for certain income types
+				income_type = "17" or income_type = "18" or income_type = "29" or income_type = "47"or income_type = "08" or income_type = "35" then	'Only runs for certain income types
 					If COLA_income_types = "" then 'If blank, it just adds the income. If not, it adds a comma and the income.
 						COLA_income_types = "MEMB " & HH_member & ": " & income_type
 					Else
