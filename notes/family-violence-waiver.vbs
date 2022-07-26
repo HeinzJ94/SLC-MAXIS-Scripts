@@ -93,7 +93,7 @@ BeginDialog, 0, 0, 286, 200, "Family Violence Waiver Approval"
   IF time_status = "Pre 60 Month" THEN CheckBox 10, 70, 70, 15, "MEMI Updated", MEMI_check
   IF time_status = "Pre 60 Month" THEN CheckBox 100, 70, 60, 15, "TIME Updated", TIME_check
   CheckBox 10, 90, 120, 15, "New MAXIS approval completed", approval_check
-  CheckBox 10, 105, 220, 20, "Check here to have the script set a TIKL for three month review", TIKL_check
+  CheckBox 10, 105, 220, 20, "Check here to have the script set a TIKL for six month review", TIKL_check
   CheckBox 10, 125, 240, 15, "Check here to have the script send a SPEC/MEMO about the approval", memo_check
 	EditBox 150, 155, 100, 15, worker_signature
 	Text 80, 155, 65, 15, "Worker Signature:"
@@ -226,12 +226,12 @@ transmit                                                        'Transmits to st
 	IF action_taken = "Approval" and time_status = "Pre 60 Month" THEN
 		call write_variable_in_SPEC_MEMO("You have been approved for a family violence waiver effective "& approval_date & "." &_
 		" While you are on this waiver, your MFIP months will not count towards the 60 month life time limit. You are required to review your safety plan with your job" &_
-		" counselor every three months to maintain this waiver. If you are not in compliance with your safety plan, the waiver could end.")
+		" counselor every six months to maintain this waiver. If you are not in compliance with your safety plan, the waiver could end.")
 	END IF
 	IF action_taken = "Approval" and time_status = "Post 60 Month" THEN
 		call write_variable_in_SPEC_MEMO("You have been approved for a family violence waiver effective "& approval_date & "." &_
 		" This waiver is your basis of extension for receiving MFIP beyond the 60 month lifetime limit.  You are required to review your safety plan with your job " &_
-		"counselor every three months to maintain this waiver. If you are not in compliance with your safety plan or fail to review it with you job counselor, your MFIP could close.")
+		"counselor every six months to maintain this waiver. If you are not in compliance with your safety plan or fail to review it with you job counselor, your MFIP could close.")
 	END IF
 	IF action_taken = "Closure" and time_status = "Pre 60 Month" THEN
 		call write_variable_in_SPEC_MEMO("Your family violence waiver is ending. Your MFIP months will begin counting towards the 60-month lifetime limit again effective " & closure_date & "." &_
@@ -248,8 +248,8 @@ END IF 'Close out the memo section'
 'Write a TIKL if requested'
 IF action_taken = "Approval" AND TIKL_check = checked THEN
 	call navigate_to_MAXIS_screen("DAIL", "WRIT")
-	call create_maxis_friendly_date(dateadd("m", 3, approval_date), 82, 5, 18)
-	call write_variable_in_TIKL("Family Violence Waiver approaching 3 months, please review.")
+	call create_maxis_friendly_date(dateadd("m", 6, approval_date), 82, 5, 18)
+	call write_variable_in_TIKL("Family Violence Waiver approaching 6 months, please review.")
 	transmit
 	PF3
 END IF
@@ -277,7 +277,7 @@ END IF
 IF approval_check = checked THEN CALL write_variable_in_case_note("New MAXIS approval completed.")
 IF MEMI_check = checked THEN CALL write_variable_in_case_note("MEMI updated.")
 IF TIME_check = checked THEN CALL write_variable_in_case_note("TIME updated.")
-IF TIKL_check = checked THEN call write_variable_in_case_note("TIKL set for three month review.")
+IF TIKL_check = checked THEN call write_variable_in_case_note("TIKL set for six month review.")
 
 '...and a worker signature.
 CALL write_variable_in_case_note("---")
