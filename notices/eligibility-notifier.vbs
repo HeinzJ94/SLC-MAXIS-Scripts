@@ -44,6 +44,7 @@ changelog = array()
 
 'INSERT ACTUAL CHANGES HERE, WITH PARAMETERS DATE, DESCRIPTION, AND SCRIPTWRITER. **ENSURE THE MOST RECENT CHANGE GOES ON TOP!!**
 'Example: call changelog_update("01/01/2000", "The script has been updated to fix a typo on the initial dialog.", "Jane Public, Oak County")
+call changelog_update("03/07/2023", "Adding MNbenefits info to SPEC/MEMO.", "Jacob Heinz, St Louis County")
 call changelog_update("01/02/2018", "Fixing bug that prevented the script from sending the memo due to MAXIS changes.", "David Courtright, St Louis County")
 call changelog_update("11/28/2016", "Initial version.", "Charles Potter, DHS")
 
@@ -118,7 +119,7 @@ call write_variable_in_SPEC_MEMO("")
 IF SNAP_checkbox = checked or CASH_checkbox = checked or HC_apply_method = "Apply in MAXIS" THEN call write_variable_in_SPEC_MEMO("To apply for " & progs_to_apply_in_maxis & "apply online at applymn.org, contact your worker to request an application, or complete an application at your local County or Tribal agency.")
 call write_variable_in_SPEC_MEMO("")
 IF SNAP_checkbox = checked or CASH_checkbox = checked THEN
-	call write_variable_in_SPEC_MEMO("When applying for SNAP and/or CASH you can submit the first page of the paper application to set your date of application. Your first month's benefit will be determined based on your application date.")
+	call write_variable_in_SPEC_MEMO("When applying for SNAP and/or CASH you can submit the first page of the paper application or apply online at mnbenefits.mn.gov to set your date of application. Your first month's benefit will be determined based on your application date.")
 	call write_variable_in_SPEC_MEMO("")
 END IF
 IF HC_apply_method = "Apply in MNSure" THEN
