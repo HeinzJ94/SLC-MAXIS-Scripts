@@ -175,7 +175,7 @@ If revw_check = checked then
 			If HC_review_code = "N" then
 				EMWriteScreen "x", 5, 71
 				transmit
-				EMReadScreen recertification_date, 8, 9, 27
+				EMReadScreen recertification_date, 8, 8, 27
 				recertification_date = cdate(replace(recertification_date, " ", "/"))
 				If datepart("m", recertification_date) = datepart("m", dateadd("m", 1, now)) then
 					HC_review_document = "renewal document"
