@@ -190,6 +190,7 @@ IF match_answer_droplist = "NO - run NEW HIRE" THEN
 
     'GOING TO MEMB, NEED TO CHECK THE HH MEMBER
     EMWriteScreen "memb", 20, 71
+    EMWriteScreen HH_memb, 20, 76
     transmit
     Do
     	EMReadScreen MEMB_current, 1, 2, 73
